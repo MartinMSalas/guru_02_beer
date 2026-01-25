@@ -9,35 +9,31 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
 
 /*
  * Author: M
- * Date: 24-Jan-26
+ * Date: 25-Jan-26
  * Project Name: guru-02
  * Description: beExcellent
  */
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class Beer {
+@AllArgsConstructor
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
+public class Customer {
+
 
     @Id
     private UUID id;
-    private String beerName;
-    private BeerStyle beerStyle;
-    private String upc;
-    private Integer quantityOnHand;
-    private BigDecimal price;
 
+    private String customerName;
     /* =========================
-        AUDITING
-        ========================= */
+    AUDITING
+    ========================= */
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private Instant createdDate;
@@ -51,6 +47,5 @@ public class Beer {
        ========================= */
     @Version
     private Long version;
-
 
 }
