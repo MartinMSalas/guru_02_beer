@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
-@EnableJpaAuditing
+//@EnableJpaAuditing
 public class Guru02Application {
 
 	public static void main(String[] args) {
