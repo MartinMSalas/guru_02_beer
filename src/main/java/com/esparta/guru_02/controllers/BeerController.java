@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,18 +22,21 @@ import java.util.UUID;
 @AllArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/beer")
+
 public class BeerController {
+
+    public static final String BEER_PATH = "/api/v1/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
 
     private final BeerService beerService;
 
+//    @GetMapping(BEER_PATH_ID)
+//    public Beer getBeerById(UUID id){
+//        log.debug("In BeerController.getBeerById() with id: {}", id);
+//        return beerService.getBeerById(id);
+//    }
 
-    public Beer getBeerById(UUID id){
-        log.debug("In BeerController.getBeerById() with id: {}", id);
-        return beerService.getBeerById(id);
-    }
-
-    @PostMapping("")
+    @PostMapping(BEER_PATH)
     public ResponseEntity<Beer> createNewBeer(@RequestBody Beer beer){
         log.debug("In BeerController.createNewBeer() with beer: {}", beer);
         HttpHeaders headers = new HttpHeaders();
@@ -40,7 +44,7 @@ public class BeerController {
         return new ResponseEntity<>(beerService.saveNewBeer(beer), headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{beerId}")
+    @PutMapping(BEER_PATH_ID)
     public ResponseEntity<Beer> updateBeer(@PathVariable UUID beerId, @RequestBody Beer beer){
         log.debug("In BeerController.updateBeer() with id: {}", beerId);
         Beer beerUpdated = beerService.updateBeer(beerId, beer);
@@ -49,18 +53,19 @@ public class BeerController {
         return new ResponseEntity<>(beerUpdated, headers, HttpStatus.OK);
 
     }
-    @GetMapping("")
+    @GetMapping(BEER_PATH)
     public List<Beer> listBeers(){
         log.debug("In BeerController.listBeers()");
         return beerService.listBeers();
     }
 
-    @GetMapping("/{beerId}")
+    @GetMapping(BEER_PATH_ID)
     public Beer getBeer(@PathVariable UUID beerId){
         log.debug("In BeerController.getBeer() with id: {}", beerId);
+
         return beerService.getBeerById(beerId);
     }
-    @DeleteMapping("/{beerId}")
+    @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity<Beer> deleteBeer(@PathVariable UUID beerId){
         log.debug("In BeerController.deleteBeer() with id: {}", beerId);
         Beer deletedBeer = beerService.deleteById(beerId);
@@ -68,12 +73,20 @@ public class BeerController {
         return new ResponseEntity<>(deletedBeer, HttpStatus.OK);
     }
 
-    @PatchMapping("/{beerId}")
+    @PatchMapping(BEER_PATH_ID)
     public ResponseEntity<Beer> patchBeer(@PathVariable UUID beerId, @RequestBody Beer beer) {
         log.debug("In BeerController.patchBeer() with id: {}", beerId);
         Beer patchedBeer = beerService.patchBeer(beerId, beer);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + patchedBeer.getId().toString());
         return new ResponseEntity<>(patchedBeer, headers, HttpStatus.OK);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ProblemDetail> handleNotFoundException(NotFoundException ex) {
+        ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+        pd.setTitle("Not Found");
+        pd.setDetail(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(pd);
     }
 }

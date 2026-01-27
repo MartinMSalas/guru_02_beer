@@ -21,24 +21,26 @@ import java.util.UUID;
 @AllArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping("/api/v1/customer")
 public class CustomerController {
+
+    public static final String CUSTOMER_PATH = "/api/v1/customer";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
 
     private final CustomerService customerService;
 
-    @GetMapping("")
+    @GetMapping(CUSTOMER_PATH)
     public List<Customer> getAllCustomers(){
         log.debug("In CustomerController.getAllCustomers()");
         return customerService.getAllCustomers();
     }
 
-    @GetMapping("/{customerId}")
+    @GetMapping(CUSTOMER_PATH_ID)
     public Customer getCustomerById(@PathVariable UUID customerId){
         log.debug("In CustomerController.getCustomerById() with id: {}", customerId);
         return customerService.getCustomerById(customerId);
     }
 
-    @PostMapping("")
+    @PostMapping(CUSTOMER_PATH)
     public ResponseEntity<Customer> createNewCustomer(@RequestBody Customer customer){
         log.debug("In CustomerController.createNewCustomer() with customer: {}", customer);
         Customer savedCustomer = customerService.saveNewCustomer(customer);
@@ -48,7 +50,7 @@ public class CustomerController {
         return new ResponseEntity<>(savedCustomer, headers, org.springframework.http.HttpStatus.CREATED);
     }
 
-    @PutMapping("/{customerId}")
+    @PutMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
         log.debug("In CustomerController.updateCustomer() with id: {}", customerId);
         Customer customerUpdated = customerService.updateCustomer(customerId, customer);
@@ -57,7 +59,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerUpdated, headers, org.springframework.http.HttpStatus.OK);
     }
 
-    @DeleteMapping("/{customerId}")
+    @DeleteMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Customer> deleteCustomer(@PathVariable UUID customerId) {
         log.debug("In CustomerController.deleteCustomer() with id: {}", customerId);
 
@@ -65,7 +67,7 @@ public class CustomerController {
         return new ResponseEntity<>(customerDeleted, HttpStatus.OK);
     }
 
-    @PatchMapping("/{customerId}")
+    @PatchMapping(CUSTOMER_PATH_ID)
     public ResponseEntity<Customer> patchCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
         log.debug("In CustomerController.patchCustomer() with id: {}", customerId);
         Customer customerPatched = customerService.patchCustomer(customerId, customer);
