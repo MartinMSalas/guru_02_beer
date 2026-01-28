@@ -1,6 +1,6 @@
 package com.esparta.guru_02.services;
 
-import com.esparta.guru_02.model.Beer;
+import com.esparta.guru_02.model.BeerDTO;
 import com.esparta.guru_02.model.BeerStyle;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,11 +18,11 @@ import java.util.*;
 @Slf4j
 public class BeerServiceImpl implements BeerService {
 
-    private Map<UUID, Beer> beerMap;
+    private Map<UUID, BeerDTO> beerMap;
 
     public BeerServiceImpl(){
         this.beerMap = new HashMap<>();
-        Beer beer1 = Beer.builder()
+        BeerDTO beerDTO1 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .beerName("Galaxy Cat")
                 .beerStyle(BeerStyle.PALE_ALE)
@@ -30,7 +30,7 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("12.99"))
                 .quantityOnHand(1223)
                 .build();
-        Beer beer2 = Beer.builder()
+        BeerDTO beerDTO2 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .beerName("Crank")
                 .beerStyle(BeerStyle.PALE_ALE)
@@ -38,7 +38,7 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("11.99"))
                 .quantityOnHand(1223)
                 .build();
-        Beer beer3 = Beer.builder()
+        BeerDTO beerDTO3 = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .beerName("Sunshine City")
                 .beerStyle(BeerStyle.IPA)
@@ -47,97 +47,97 @@ public class BeerServiceImpl implements BeerService {
                 .quantityOnHand(1223)
                 .build();
 
-        beerMap.put(beer1.getId(), beer1);
-        beerMap.put(beer2.getId(), beer2);
-        beerMap.put(beer3.getId(), beer3);
+        beerMap.put(beerDTO1.getId(), beerDTO1);
+        beerMap.put(beerDTO2.getId(), beerDTO2);
+        beerMap.put(beerDTO3.getId(), beerDTO3);
 
 
     }
 
     @Override
-    public List<Beer> listBeers(){
+    public List<BeerDTO> listBeers(){
         // return beerMap.values().stream().toList();
         log.debug("List Beers - in Service");
         return new ArrayList<>(beerMap.values());
     }
 
     @Override
-    public Beer saveNewBeer(Beer beer) {
-        log.debug("Save New Beer - in Service. Beer: {}", beer);
-        Beer savedBeer = Beer.builder()
+    public BeerDTO saveNewBeer(BeerDTO beerDTO) {
+        log.debug("Save New BeerDTO - in Service. BeerDTO: {}", beerDTO);
+        BeerDTO savedBeerDTO = BeerDTO.builder()
                 .id(UUID.randomUUID())
-                .beerName(beer.getBeerName())
-                .beerStyle(beer.getBeerStyle())
-                .upc(beer.getUpc())
-                .price(beer.getPrice())
-                .quantityOnHand(beer.getQuantityOnHand())
+                .beerName(beerDTO.getBeerName())
+                .beerStyle(beerDTO.getBeerStyle())
+                .upc(beerDTO.getUpc())
+                .price(beerDTO.getPrice())
+                .quantityOnHand(beerDTO.getQuantityOnHand())
                 .build();
-        beerMap.put(savedBeer.getId(), savedBeer);
-        log.debug("New Beer saved: {}", savedBeer);
-        return savedBeer;
+        beerMap.put(savedBeerDTO.getId(), savedBeerDTO);
+        log.debug("New BeerDTO saved: {}", savedBeerDTO);
+        return savedBeerDTO;
     }
 
     @Override
-    public Beer updateBeer(UUID id, Beer beer) {
-        log.debug("Update Beer - in Service. Id: {}, Beer: {}", id, beer);
-        Beer existingBeer = beerMap.get(id);
-        if (existingBeer != null) {
-            existingBeer.setBeerName(beer.getBeerName());
-            existingBeer.setBeerStyle(beer.getBeerStyle());
-            existingBeer.setUpc(beer.getUpc());
-            existingBeer.setPrice(beer.getPrice());
-            existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
-            log.debug("Beer updated: {}", existingBeer);
-            return existingBeer;
+    public BeerDTO updateBeer(UUID id, BeerDTO beerDTO) {
+        log.debug("Update BeerDTO - in Service. Id: {}, BeerDTO: {}", id, beerDTO);
+        BeerDTO existingBeerDTO = beerMap.get(id);
+        if (existingBeerDTO != null) {
+            existingBeerDTO.setBeerName(beerDTO.getBeerName());
+            existingBeerDTO.setBeerStyle(beerDTO.getBeerStyle());
+            existingBeerDTO.setUpc(beerDTO.getUpc());
+            existingBeerDTO.setPrice(beerDTO.getPrice());
+            existingBeerDTO.setQuantityOnHand(beerDTO.getQuantityOnHand());
+            log.debug("BeerDTO updated: {}", existingBeerDTO);
+            return existingBeerDTO;
         } else {
-            log.warn("Beer with id {} not found for update.", id);
+            log.warn("BeerDTO with id {} not found for update.", id);
             return null;
         }
     }
 
     @Override
-    public Beer deleteById(UUID beerId) {
-        log.debug("Delete Beer - in Service. Id: {}", beerId);
+    public BeerDTO deleteById(UUID beerId) {
+        log.debug("Delete BeerDTO - in Service. Id: {}", beerId);
         if (beerMap.containsKey(beerId)) {
-            Beer removedBeer = beerMap.remove(beerId);
-            log.debug("Beer deleted: {}", removedBeer);
-            return removedBeer;
+            BeerDTO removedBeerDTO = beerMap.remove(beerId);
+            log.debug("BeerDTO deleted: {}", removedBeerDTO);
+            return removedBeerDTO;
         }
-        log.debug("Beer with id {} not found for deletion.", beerId);
+        log.debug("BeerDTO with id {} not found for deletion.", beerId);
         return null;
     }
 
     @Override
-    public Beer patchBeer(UUID beerId, Beer beer) {
-        log.debug("Patch Beer - in Service. Id: {}, Beer: {}", beerId, beer);
-        Beer existingBeer = beerMap.get(beerId);
-        if (existingBeer != null) {
-            if (beer.getBeerName() != null) {
-                existingBeer.setBeerName(beer.getBeerName());
+    public BeerDTO patchBeer(UUID beerId, BeerDTO beerDTO) {
+        log.debug("Patch BeerDTO - in Service. Id: {}, BeerDTO: {}", beerId, beerDTO);
+        BeerDTO existingBeerDTO = beerMap.get(beerId);
+        if (existingBeerDTO != null) {
+            if (beerDTO.getBeerName() != null) {
+                existingBeerDTO.setBeerName(beerDTO.getBeerName());
             }
-            if (beer.getBeerStyle() != null) {
-                existingBeer.setBeerStyle(beer.getBeerStyle());
+            if (beerDTO.getBeerStyle() != null) {
+                existingBeerDTO.setBeerStyle(beerDTO.getBeerStyle());
             }
-            if (beer.getUpc() != null) {
-                existingBeer.setUpc(beer.getUpc());
+            if (beerDTO.getUpc() != null) {
+                existingBeerDTO.setUpc(beerDTO.getUpc());
             }
-            if (beer.getPrice() != null) {
-                existingBeer.setPrice(beer.getPrice());
+            if (beerDTO.getPrice() != null) {
+                existingBeerDTO.setPrice(beerDTO.getPrice());
             }
-            if (beer.getQuantityOnHand() != null) {
-                existingBeer.setQuantityOnHand(beer.getQuantityOnHand());
+            if (beerDTO.getQuantityOnHand() != null) {
+                existingBeerDTO.setQuantityOnHand(beerDTO.getQuantityOnHand());
             }
-            log.debug("Beer patched: {}", existingBeer);
-            return existingBeer;
+            log.debug("BeerDTO patched: {}", existingBeerDTO);
+            return existingBeerDTO;
         }
-        log.debug("Beer with id {} not found for patching.", beerId);
+        log.debug("BeerDTO with id {} not found for patching.", beerId);
         return null;
     }
 
     @Override
-    public Beer getBeerById(UUID id) {
-        log.debug("Get Beer By Id - in Service. Id: {}", id);
-        return Beer.builder()
+    public Optional<BeerDTO> getBeerById(UUID id) {
+        log.debug("Get BeerDTO By Id - in Service. Id: {}", id);
+        BeerDTO fakeBeerDTO = BeerDTO.builder()
                 .id(UUID.randomUUID())
                 .beerName("Galaxy Cat")
                 .beerStyle(BeerStyle.LAGER)
@@ -145,5 +145,6 @@ public class BeerServiceImpl implements BeerService {
                 .price(new BigDecimal("12.99"))
                 .quantityOnHand(1123)
                 .build();
+        return Optional.of(fakeBeerDTO);
     }
 }

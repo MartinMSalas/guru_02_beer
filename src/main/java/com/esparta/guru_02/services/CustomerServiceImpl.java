@@ -1,6 +1,6 @@
 package com.esparta.guru_02.services;
 
-import com.esparta.guru_02.model.Customer;
+import com.esparta.guru_02.model.CustomerDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -15,95 +15,95 @@ import java.util.*;
 @Slf4j
 @Service
 public class CustomerServiceImpl implements CustomerService {
-    Map<UUID, Customer> customerData;
+    Map<UUID, CustomerDTO> customerData;
 
     public CustomerServiceImpl() {
         customerData = new HashMap<>();
-        Customer customer1 = Customer.builder().customerName("john").id(UUID.randomUUID()).build();
+        CustomerDTO customerDTO1 = CustomerDTO.builder().customerName("john").id(UUID.randomUUID()).build();
 
-        Customer customer2 = Customer.builder().customerName("jane").id(UUID.randomUUID()).build();
+        CustomerDTO customerDTO2 = CustomerDTO.builder().customerName("jane").id(UUID.randomUUID()).build();
 
-        Customer customer3 = Customer.builder().customerName("smith").id(UUID.randomUUID()).build();
+        CustomerDTO customerDTO3 = CustomerDTO.builder().customerName("smith").id(UUID.randomUUID()).build();
 
 
-        customerData.put(customer1.getId(), customer1);
-        customerData.put(customer2.getId(), customer2);
-        customerData.put(customer3.getId(), customer3);
+        customerData.put(customerDTO1.getId(), customerDTO1);
+        customerData.put(customerDTO2.getId(), customerDTO2);
+        customerData.put(customerDTO3.getId(), customerDTO3);
 
     }
 
     @Override
-    public List<Customer> getAllCustomers() {
+    public List<CustomerDTO> getAllCustomers() {
 
         log.debug("In CustomerServiceImpl.getAllCustomers()");
         return new ArrayList<>(customerData.values());
     }
 
     @Override
-    public Customer getCustomerById(UUID id) {
+    public Optional<CustomerDTO> getCustomerById(UUID id) {
         log.debug("In CustomerServiceImpl.getCustomerById() with id: {}", id);
         if (customerData.containsKey(id)) {
-            return customerData.get(id);
+            return Optional.of(customerData.get(id));
         }
         return null;
     }
 
     @Override
-    public Customer saveNewCustomer(Customer customer) {
-        log.debug("In CustomerServiceImpl.saveNewCustomer() with customer: {}", customer);
-        Customer newCustomer = Customer.builder()
+    public CustomerDTO saveNewCustomer(CustomerDTO customerDTO) {
+        log.debug("In CustomerServiceImpl.saveNewCustomer() with customerDTO: {}", customerDTO);
+        CustomerDTO newCustomerDTO = CustomerDTO.builder()
                 .id(UUID.randomUUID())
-                .customerName(customer.getCustomerName())
+                .customerName(customerDTO.getCustomerName())
                 .build();
-        // Note: In a real application, you would save the new customer to a database or persistent storage.
+        // Note: In a real application, you would save the new customerDTO to a database or persistent storage.
 
-        customerData.put(newCustomer.getId(), newCustomer); // This line is illustrative; Map.of creates an immutable map.
-        return newCustomer;
+        customerData.put(newCustomerDTO.getId(), newCustomerDTO); // This line is illustrative; Map.of creates an immutable map.
+        return newCustomerDTO;
 
 
     }
 
     @Override
-    public Customer updateCustomer(UUID customerId, Customer customer) {
+    public CustomerDTO updateCustomer(UUID customerId, CustomerDTO customerDTO) {
         log.debug("In CustomerServiceImpl.updateCustomer() with id: {}", customerId);
         if (customerData.containsKey(customerId)) {
-            Customer updatedCustomer = Customer.builder()
+            CustomerDTO updatedCustomerDTO = CustomerDTO.builder()
                     .id(customerId)
-                    .customerName(customer.getCustomerName())
+                    .customerName(customerDTO.getCustomerName())
                     .build();
-            customerData.put(customerId, updatedCustomer);
-            log.debug("Customer updated: {}", updatedCustomer);
-            return updatedCustomer;
+            customerData.put(customerId, updatedCustomerDTO);
+            log.debug("CustomerDTO updated: {}", updatedCustomerDTO);
+            return updatedCustomerDTO;
         }
-        log.debug("Customer with id {} not found for update.", customerId);
+        log.debug("CustomerDTO with id {} not found for update.", customerId);
         return null;
     }
 
     @Override
-    public Customer deleteCustomer(UUID customerId) {
+    public CustomerDTO deleteCustomer(UUID customerId) {
         log.debug("In CustomerServiceImpl.deleteCustomer() with id: {}", customerId);
         if (customerData.containsKey(customerId)) {
-            Customer removedCustomer = customerData.remove(customerId);
-            log.debug("Customer deleted: {}", removedCustomer);
-            return removedCustomer;
+            CustomerDTO removedCustomerDTO = customerData.remove(customerId);
+            log.debug("CustomerDTO deleted: {}", removedCustomerDTO);
+            return removedCustomerDTO;
         }
-        log.debug("Customer with id {} not found for deletion.", customerId);
+        log.debug("CustomerDTO with id {} not found for deletion.", customerId);
         return null;
     }
 
     @Override
-    public Customer patchCustomer(UUID customerId, Customer customer) {
+    public CustomerDTO patchCustomer(UUID customerId, CustomerDTO customerDTO) {
         log.debug("In CustomerServiceImpl.patchCustomer() with id: {}", customerId);
-        Customer existingCustomer = customerData.get(customerId);
-        if (existingCustomer != null) {
-            if (customer.getCustomerName() != null) {
-                existingCustomer.setCustomerName(customer.getCustomerName());
+        CustomerDTO existingCustomerDTO = customerData.get(customerId);
+        if (existingCustomerDTO != null) {
+            if (customerDTO.getCustomerName() != null) {
+                existingCustomerDTO.setCustomerName(customerDTO.getCustomerName());
             }
-            Customer savedCustomer = customerData.put(customerId, existingCustomer);
-            log.debug("Customer patched: {}", existingCustomer);
-            return existingCustomer;
+            CustomerDTO savedCustomerDTO = customerData.put(customerId, existingCustomerDTO);
+            log.debug("CustomerDTO patched: {}", existingCustomerDTO);
+            return existingCustomerDTO;
         }
-        log.debug("Customer with id {} not found for patching.", customerId);
+        log.debug("CustomerDTO with id {} not found for patching.", customerId);
         return null;
 
     }

@@ -1,8 +1,9 @@
 package com.esparta.guru_02.services;
 
-import com.esparta.guru_02.model.Customer;
+import com.esparta.guru_02.model.CustomerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /*
@@ -13,15 +14,15 @@ import java.util.UUID;
  */
 public interface CustomerService {
 
-    List<Customer> getAllCustomers();
+    List<CustomerDTO> getAllCustomers();
 
-    Customer getCustomerById(UUID id);
+    Optional<CustomerDTO> getCustomerById(UUID id);
 
-    Customer saveNewCustomer(Customer customer);
+    CustomerDTO saveNewCustomer(CustomerDTO customerDTO);
 
-    Customer updateCustomer(UUID customerId, Customer customer);
+    CustomerDTO updateCustomer(UUID customerId, CustomerDTO customerDTO);
 
-    Customer deleteCustomer(UUID customerId);
+    CustomerDTO deleteCustomer(UUID customerId);
 
-    Customer patchCustomer(UUID customerId, Customer customer);
+    CustomerDTO patchCustomer(UUID customerId, CustomerDTO customerDTO);
 }

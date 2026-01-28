@@ -1,8 +1,9 @@
 package com.esparta.guru_02.services;
 
-import com.esparta.guru_02.model.Beer;
+import com.esparta.guru_02.model.BeerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 /*
@@ -13,15 +14,15 @@ import java.util.UUID;
  */
 public interface BeerService {
 
-    Beer getBeerById(UUID id);
+    Optional<BeerDTO> getBeerById(UUID id);
 
-    List<Beer>  listBeers();
+    List<BeerDTO>  listBeers();
 
-    Beer saveNewBeer(Beer beer);
+    BeerDTO saveNewBeer(BeerDTO beerDTO);
 
-    Beer updateBeer(UUID beerId, Beer beer);
+    BeerDTO updateBeer(UUID beerId, BeerDTO beerDTO);
 
-    Beer deleteById(UUID beerId);
+    BeerDTO deleteById(UUID beerId);
 
-    Beer patchBeer(UUID beerId, Beer beer);
+    BeerDTO patchBeer(UUID beerId, BeerDTO beerDTO);
 }

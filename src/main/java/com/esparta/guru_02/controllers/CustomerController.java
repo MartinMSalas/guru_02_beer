@@ -1,6 +1,6 @@
 package com.esparta.guru_02.controllers;
 
-import com.esparta.guru_02.model.Customer;
+import com.esparta.guru_02.model.CustomerDTO;
 import com.esparta.guru_02.services.CustomerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,50 +29,50 @@ public class CustomerController {
     private final CustomerService customerService;
 
     @GetMapping(CUSTOMER_PATH)
-    public List<Customer> getAllCustomers(){
+    public List<CustomerDTO> getAllCustomers(){
         log.debug("In CustomerController.getAllCustomers()");
         return customerService.getAllCustomers();
     }
 
     @GetMapping(CUSTOMER_PATH_ID)
-    public Customer getCustomerById(@PathVariable UUID customerId){
+    public CustomerDTO getCustomerById(@PathVariable UUID customerId){
         log.debug("In CustomerController.getCustomerById() with id: {}", customerId);
-        return customerService.getCustomerById(customerId);
+        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping(CUSTOMER_PATH)
-    public ResponseEntity<Customer> createNewCustomer(@RequestBody Customer customer){
-        log.debug("In CustomerController.createNewCustomer() with customer: {}", customer);
-        Customer savedCustomer = customerService.saveNewCustomer(customer);
+    public ResponseEntity<CustomerDTO> createNewCustomer(@RequestBody CustomerDTO customerDTO){
+        log.debug("In CustomerController.createNewCustomer() with customerDTO: {}", customerDTO);
+        CustomerDTO savedCustomerDTO = customerService.saveNewCustomer(customerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/customer/" + savedCustomer.getId().toString());
+        headers.add("Location","/api/v1/customerDTO/" + savedCustomerDTO.getId().toString());
 
-        return new ResponseEntity<>(savedCustomer, headers, org.springframework.http.HttpStatus.CREATED);
+        return new ResponseEntity<>(savedCustomerDTO, headers, org.springframework.http.HttpStatus.CREATED);
     }
 
     @PutMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable UUID customerId, @RequestBody CustomerDTO customerDTO) {
         log.debug("In CustomerController.updateCustomer() with id: {}", customerId);
-        Customer customerUpdated = customerService.updateCustomer(customerId, customer);
+        CustomerDTO customerDTOUpdated = customerService.updateCustomer(customerId, customerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/customer/" + customerUpdated.getId().toString());
-        return new ResponseEntity<>(customerUpdated, headers, org.springframework.http.HttpStatus.OK);
+        headers.add("Location", "/api/v1/customerDTO/" + customerDTOUpdated.getId().toString());
+        return new ResponseEntity<>(customerDTOUpdated, headers, org.springframework.http.HttpStatus.OK);
     }
 
     @DeleteMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity<Customer> deleteCustomer(@PathVariable UUID customerId) {
+    public ResponseEntity<CustomerDTO> deleteCustomer(@PathVariable UUID customerId) {
         log.debug("In CustomerController.deleteCustomer() with id: {}", customerId);
 
-        Customer customerDeleted = customerService.deleteCustomer(customerId);
-        return new ResponseEntity<>(customerDeleted, HttpStatus.OK);
+        CustomerDTO customerDTODeleted = customerService.deleteCustomer(customerId);
+        return new ResponseEntity<>(customerDTODeleted, HttpStatus.OK);
     }
 
     @PatchMapping(CUSTOMER_PATH_ID)
-    public ResponseEntity<Customer> patchCustomer(@PathVariable UUID customerId, @RequestBody Customer customer) {
+    public ResponseEntity<CustomerDTO> patchCustomer(@PathVariable UUID customerId, @RequestBody CustomerDTO customerDTO) {
         log.debug("In CustomerController.patchCustomer() with id: {}", customerId);
-        Customer customerPatched = customerService.patchCustomer(customerId, customer);
+        CustomerDTO customerDTOPatched = customerService.patchCustomer(customerId, customerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/customer/" + customerPatched.getId().toString());
-        return new ResponseEntity<>(customerPatched, headers, HttpStatus.OK);
+        headers.add("Location", "/api/v1/customerDTO/" + customerDTOPatched.getId().toString());
+        return new ResponseEntity<>(customerDTOPatched, headers, HttpStatus.OK);
     }
 }

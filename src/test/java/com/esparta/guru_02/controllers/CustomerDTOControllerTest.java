@@ -2,7 +2,7 @@ package com.esparta.guru_02.controllers;
 
 import com.esparta.guru_02.configuration.JpaAuditingConfig;
 
-import com.esparta.guru_02.model.Customer;
+import com.esparta.guru_02.model.CustomerDTO;
 
 import com.esparta.guru_02.services.CustomerService;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,6 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
@@ -41,7 +42,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
                 classes = JpaAuditingConfig.class
         )
 )
-class CustomerControllerTest {
+class CustomerDTOControllerTest {
 
 
     @Autowired
@@ -54,24 +55,24 @@ class CustomerControllerTest {
     @MockitoBean
     CustomerService customerService;
 
-    static Customer customer;
-    static List<Customer> customersList;
+    static CustomerDTO customerDTO;
+    static List<CustomerDTO> customersList;
 
     @BeforeAll
     static void setUp() {
-        customer = Customer.builder()
+        customerDTO = CustomerDTO.builder()
                 .id(UUID.randomUUID())
                 .customerName("PoNCio")
                 .build();
-        customersList = List.of(customer);
+        customersList = List.of(customerDTO);
     }
 
 
     @Test
     void givenValidCustomerId_whenDeleteCustomer_thenReturn200Ok() throws Exception {
         // given
-        UUID customerId = customer.getId();
-        given(customerService.deleteCustomer(eq(customerId))).willReturn(customer);
+        UUID customerId = customerDTO.getId();
+        given(customerService.deleteCustomer(eq(customerId))).willReturn(customerDTO);
 
 
         // when & then
@@ -90,34 +91,34 @@ class CustomerControllerTest {
     @Test
     void givenValidCustomerPayload_whenPostCustomer_thenReturn201Created() throws Exception {
         // given
-        UUID customerId = customer.getId();
-        given(customerService.saveNewCustomer(customer)).willReturn(customer);
+        UUID customerId = customerDTO.getId();
+        given(customerService.saveNewCustomer(customerDTO)).willReturn(customerDTO);
 
         // when & then
         mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customer)))
+                        .content(objectMapper.writeValueAsString(customerDTO)))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/v1/customer/" + customerId.toString()));
+                .andExpect(header().string("Location", "/api/v1/customerDTO/" + customerId.toString()));
     }
 
     @Test
     void givenValidUpdatedCustomerPayload_whenUpdateCustomer_thenReturn200Ok() throws Exception {
         // given
-        UUID customerId = customer.getId();
-        given(customerService.updateCustomer(eq(customer.getId()), any(Customer.class))).willReturn(customer);
+        UUID customerId = customerDTO.getId();
+        given(customerService.updateCustomer(eq(customerDTO.getId()), any(CustomerDTO.class))).willReturn(customerDTO);
 
         // when & then
         mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID,  customerId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(customer)))
+                        .content(objectMapper.writeValueAsString(customerDTO)))
                 .andExpect(status().isOk())
-                .andExpect(header().string("Location", "/api/v1/customer/" + customerId.toString()));
+                .andExpect(header().string("Location", "/api/v1/customerDTO/" + customerId.toString()));
 
-        //verify(customerService, times(1)).updateCustomer(any(UUID.class), any(Customer.class));
-        verify(customerService).updateCustomer(eq(customerId), any(Customer.class));
+        //verify(customerService, times(1)).updateCustomer(any(UUID.class), any(CustomerDTO.class));
+        verify(customerService).updateCustomer(eq(customerId), any(CustomerDTO.class));
     }
     @Test
     void testGetCustomersList() throws Exception {
@@ -132,12 +133,12 @@ class CustomerControllerTest {
     }
 
     @Test
-    void testGetCustomerById() throws Exception {
-        UUID customerId = customer.getId();
+    void  givenValidCustomerId_whenGetCustomerById_thenReturn200OkAndCustomer() throws Exception {
+        UUID customerId = customerDTO.getId();
         when(customerService.getCustomerById(any(UUID.class))).thenReturn(
-                customer
+                Optional.of(customerDTO)
         );
-        //System.out.println(beer.getId());
+        //System.out.println(beerDTO.getId());
         mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID,  customerId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -146,6 +147,20 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.customerName", is("PoNCio")));
 
     }
+
+    @Test
+    void givenNonExistingCustomerId_whenGetCustomerById_thenReturn404NotFound() throws Exception {
+
+        // given
+        given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        // when
+        mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+
+        // then
+    }
+
     @Test
     void getAllCustomers() {
     }
