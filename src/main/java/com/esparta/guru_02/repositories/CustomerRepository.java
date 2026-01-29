@@ -3,6 +3,7 @@ package com.esparta.guru_02.repositories;
 import com.esparta.guru_02.entities.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /*
@@ -12,4 +13,5 @@ import java.util.UUID;
  * Description: beExcellent
  */
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+    Optional<Customer> findFirstByOrderByCreatedDateAsc();
 }

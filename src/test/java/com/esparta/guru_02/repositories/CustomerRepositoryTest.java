@@ -10,8 +10,8 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 /*
- * Author: m
- * Date: 29/1/26
+ * Author: M
+ * Date: 29-Jan-26
  * Project Name: guru_02_beer
  * Description: beExcellent
  */

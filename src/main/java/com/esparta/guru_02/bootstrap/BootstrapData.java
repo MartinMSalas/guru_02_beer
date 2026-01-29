@@ -1,0 +1,76 @@
+package com.esparta.guru_02.bootstrap;
+
+import com.esparta.guru_02.entities.Customer;
+import com.esparta.guru_02.entities.Beer;
+
+import com.esparta.guru_02.model.BeerStyle;
+import com.esparta.guru_02.repositories.CustomerRepository;
+import com.esparta.guru_02.repositories.BeerRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/*
+ * Author: M
+ * Date: 29-Jan-26
+ * Project Name: guru-02
+ * Description: beExcellent
+ */
+@Component
+@RequiredArgsConstructor
+@Slf4j
+@Profile("!test")
+public class BootstrapData implements CommandLineRunner {
+
+    private final CustomerRepository customerRepository;
+    private final BeerRepository beerRepository;
+
+
+
+    @Override
+    public void run(String... args) {
+        log.debug("In bootstrap; ");
+        /* ========= Beer ============== */
+        long beerCount = beerRepository.count();
+        if(beerCount== 0) {
+            log.debug("Loading Beer Data");
+            beerRepository.saveAll(List.of(
+                    Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.PALE_ALE).upc("123456789012")
+                            .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
+                    Beer.builder().beerName("Crank").beerStyle(BeerStyle.PALE_ALE).upc("123456789013")
+                            .price(new BigDecimal("11.99")).quantityOnHand(1223).build(),
+                    Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.IPA).upc("123456789014")
+                            .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
+            ));
+            beerCount = beerRepository.count();
+        }
+
+        /* ========= Customer ======== */
+        long customerCount = customerRepository.count();
+        if( customerCount == 0) {
+            log.debug("Loading Customer Data");
+
+            customerRepository.saveAll(List.of(
+                    Customer.builder().customerName("Don Pepe").build(),
+                    Customer.builder().customerName("Maria Luisa").build(),
+                    Customer.builder().customerName("Juan Carlos").build()
+            ));
+            customerCount = customerRepository.count();
+        }
+
+
+        /* ========= Log ========= */
+        log.debug("Beer Count: {}", beerCount);
+        log.debug("Saved Beer: {}", beerRepository.findFirstByOrderByCreatedDateAsc().orElseThrow(() -> new NoSuchElementException("No beers found after bootstrap")));
+        log.debug("Customer Count: {}", customerCount);
+        log.debug("Saved Customer: {}", customerRepository.findFirstByOrderByCreatedDateAsc().orElseThrow(() -> new NoSuchElementException("No customers found after bootstrap")));
+
+    }
+}
