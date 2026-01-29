@@ -35,36 +35,41 @@ public class BeerController {
 //        return beerService.getBeerById(id);
 //    }
 
-    @PostMapping(BEER_PATH)
-    public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
-        log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
+    @GetMapping(BEER_PATH_ID)
+    public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId){
+        log.debug("In BeerController.getBeer() with id: {}", beerId);
+        BeerDTO beerDTO = beerService.getBeerById(beerId);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/beerDTO/" + beerDTO.getBeerId().toString());
-        return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
+        headers.add("Location", "/api/v1/beer/" + beerDTO.getBeerId().toString());
+        return new ResponseEntity<>(beerDTO,headers, HttpStatus.OK) ;
     }
 
-    @PutMapping(BEER_PATH_ID)
-    public ResponseEntity<BeerDTO> updateBeer(@PathVariable UUID beerId, @RequestBody BeerDTO beerDTO){
-        log.debug("In BeerController.updateBeer() with id: {}", beerId);
-        BeerDTO beerDTOUpdated = beerService.updateBeer(beerId, beerDTO);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/beerDTO/" + beerDTOUpdated.getBeerId().toString());
-        return new ResponseEntity<>(beerDTOUpdated, headers, HttpStatus.OK);
-
-    }
     @GetMapping(BEER_PATH)
     public List<BeerDTO> listBeers(){
         log.debug("In BeerController.listBeers()");
         return beerService.listBeers();
     }
 
-    @GetMapping(BEER_PATH_ID)
-    public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId){
-        log.debug("In BeerController.getBeer() with id: {}", beerId);
-        BeerDTO beerDTO = beerService.getBeerById(beerId);
+    @PostMapping(BEER_PATH)
+    public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
+        log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
+        BeerDTO beerDTOSaved =  beerService.saveNewBeer(beerDTO);
+        log.debug("Saved BeerDTO: {}", beerDTOSaved);
+
+
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beerDTO/" + beerDTO.getBeerId().toString());
-        return new ResponseEntity<>(beerDTO,headers, HttpStatus.OK) ;
+        headers.add("Location","/api/v1/beer/" + beerDTOSaved.getBeerId().toString());
+        return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
+    }
+    @PutMapping(BEER_PATH_ID)
+    public ResponseEntity<BeerDTO> updateBeer(@PathVariable UUID beerId, @RequestBody BeerDTO beerDTO){
+        log.debug("In BeerController.updateBeer() with id: {}", beerId);
+        BeerDTO beerDTOUpdated = beerService.updateBeer(beerId, beerDTO);
+        log.debug("Updated BeerDTO: {}", beerDTOUpdated);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location","/api/v1/beer/" + beerDTOUpdated.getBeerId().toString());
+        return new ResponseEntity<>(beerDTOUpdated, headers, HttpStatus.OK);
+
     }
     @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> deleteBeer(@PathVariable UUID beerId){
@@ -79,7 +84,7 @@ public class BeerController {
         log.debug("In BeerController.patchBeer() with id: {}", beerId);
         BeerDTO patchedBeerDTO = beerService.patchBeer(beerId, beerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beerDTO/" + patchedBeerDTO.getBeerId().toString());
+        headers.add("Location", "/api/v1/beer/" + patchedBeerDTO.getBeerId().toString());
         return new ResponseEntity<>(patchedBeerDTO, headers, HttpStatus.OK);
     }
 

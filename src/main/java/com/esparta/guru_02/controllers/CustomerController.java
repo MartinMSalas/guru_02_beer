@@ -28,24 +28,28 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
+    @GetMapping(CUSTOMER_PATH_ID)
+    public ResponseEntity<CustomerDTO> getCustomerById(@PathVariable UUID customerId){
+        log.debug("In CustomerController.getCustomerById() with id: {}", customerId);
+        CustomerDTO customerDTO = customerService.getCustomerById(customerId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("location", "/api/v1/customer/" + customerDTO.getCustomerId().toString());
+        return new ResponseEntity<>(customerDTO, headers, HttpStatus.OK);
+    }
+
     @GetMapping(CUSTOMER_PATH)
     public List<CustomerDTO> getAllCustomers(){
         log.debug("In CustomerController.getAllCustomers()");
         return customerService.getAllCustomers();
     }
 
-    @GetMapping(CUSTOMER_PATH_ID)
-    public CustomerDTO getCustomerById(@PathVariable UUID customerId){
-        log.debug("In CustomerController.getCustomerById() with id: {}", customerId);
-        return customerService.getCustomerById(customerId).orElseThrow(NotFoundException::new);
-    }
-
     @PostMapping(CUSTOMER_PATH)
     public ResponseEntity<CustomerDTO> createNewCustomer(@RequestBody CustomerDTO customerDTO){
         log.debug("In CustomerController.createNewCustomer() with customerDTO: {}", customerDTO);
         CustomerDTO savedCustomerDTO = customerService.saveNewCustomer(customerDTO);
+        log.debug("Saved CustomerDTO: {}", savedCustomerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/customerDTO/" + savedCustomerDTO.getId().toString());
+        headers.add("Location","/api/v1/customer/" + savedCustomerDTO.getCustomerId().toString());
 
         return new ResponseEntity<>(savedCustomerDTO, headers, org.springframework.http.HttpStatus.CREATED);
     }
@@ -54,8 +58,9 @@ public class CustomerController {
     public ResponseEntity<CustomerDTO> updateCustomer(@PathVariable UUID customerId, @RequestBody CustomerDTO customerDTO) {
         log.debug("In CustomerController.updateCustomer() with id: {}", customerId);
         CustomerDTO customerDTOUpdated = customerService.updateCustomer(customerId, customerDTO);
+        log.debug("Updated CustomerDTO: {}", customerDTOUpdated);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/customerDTO/" + customerDTOUpdated.getId().toString());
+        headers.add("Location", "/api/v1/customer/" + customerDTOUpdated.getCustomerId().toString());
         return new ResponseEntity<>(customerDTOUpdated, headers, org.springframework.http.HttpStatus.OK);
     }
 
@@ -72,7 +77,7 @@ public class CustomerController {
         log.debug("In CustomerController.patchCustomer() with id: {}", customerId);
         CustomerDTO customerDTOPatched = customerService.patchCustomer(customerId, customerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/customerDTO/" + customerDTOPatched.getId().toString());
+        headers.add("Location", "/api/v1/customer/" + customerDTOPatched.getCustomerId().toString());
         return new ResponseEntity<>(customerDTOPatched, headers, HttpStatus.OK);
     }
 }

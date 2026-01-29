@@ -1,15 +1,11 @@
 package com.esparta.guru_02.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -22,13 +18,13 @@ import java.util.UUID;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CustomerDTO {
 
-
-
-    private UUID id;
-    @NotBlank(message = "Beer name must not be blank")
-    @Size(max = 255, message = "Beer name must be at most 255 characters")
+    private UUID customerId;
+    @NotBlank(message = "Customer name must not be blank")
+    @Size(max = 255, message = "Customer name must be at most 255 characters")
     private String customerName;
     /* =========================
     AUDITING

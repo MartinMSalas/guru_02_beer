@@ -14,9 +14,9 @@ import java.util.UUID;
  */
 public interface CustomerService {
 
-    List<CustomerDTO> getAllCustomers();
+    CustomerDTO getCustomerById(UUID id);
 
-    Optional<CustomerDTO> getCustomerById(UUID id);
+    List<CustomerDTO> getAllCustomers();
 
     CustomerDTO saveNewCustomer(CustomerDTO customerDTO);
 

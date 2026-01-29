@@ -1,6 +1,5 @@
 package com.esparta.guru_02.model;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -9,10 +8,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -29,7 +24,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BeerDTO {
-
 
     private UUID beerId;
     @NotBlank(message = "Beer name must not be blank")

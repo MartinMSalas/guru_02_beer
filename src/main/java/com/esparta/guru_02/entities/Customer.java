@@ -33,7 +33,7 @@ public class Customer {
     @Id
     @GeneratedValue
     @Column(nullable = false, updatable = false)
-    private UUID id;
+    private UUID customerId;
 
     @Column(nullable = false, length = 255)
     private String customerName;

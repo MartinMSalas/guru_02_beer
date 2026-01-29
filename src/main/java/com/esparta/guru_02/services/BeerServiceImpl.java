@@ -74,15 +74,32 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
+    public BeerDTO getBeerById(UUID beerId) {
+        log.debug("Get BeerDTO by Id - in Service. Id: {}", beerId);
+
+        if (beerId == null) {
+            throw new IllegalArgumentException("Beer ID must be provided");
+        }
+
+        Beer beer = beerRepository.findById(beerId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Beer not found with id " + beerId
+                ));
+
+        log.debug("Loaded Beer: {}", beer);
+
+        return beerMapper.beerToBeerDTO(beer);
+    }
+
+    @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
         log.debug("Save New BeerDTO - in Service. BeerDTO: {}", beerDTO);
 
         Beer beerToSave = beerMapper.beerDTOToBeer(beerDTO);
         Beer savedBeer = beerRepository.save(beerToSave);
         log.debug("Beer entity saved: {}", savedBeer);
-        BeerDTO savedBeerDTO = beerMapper.beerToBeerDTO(savedBeer);
-        log.debug("New BeerDTO saved: {}", savedBeerDTO);
-        return savedBeerDTO;
+
+        return beerMapper.beerToBeerDTO(savedBeer);
     }
 
 
@@ -162,23 +179,5 @@ public class BeerServiceImpl implements BeerService {
         //  Return fresh DTO (with updated auditing + version)
         return beerMapper.beerToBeerDTO(savedBeer);
 
-    }
-
-    @Override
-    public BeerDTO getBeerById(UUID beerId) {
-        log.debug("Get BeerDTO by Id - in Service. Id: {}", beerId);
-
-        if (beerId == null) {
-            throw new IllegalArgumentException("Beer ID must be provided");
-        }
-
-        Beer beer = beerRepository.findById(beerId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Beer not found with id " + beerId
-                ));
-
-        log.debug("Loaded Beer: {}", beer);
-
-        return beerMapper.beerToBeerDTO(beer);
     }
 }

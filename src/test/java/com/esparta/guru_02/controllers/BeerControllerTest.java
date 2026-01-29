@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
+
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -67,29 +67,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void givenValidBeerId_whenDeleteBeer_thenReturn200Ok() throws Exception {
-
-        // GIVEN a valid beer ID
-        UUID beerId = beerDTO.getBeerId();
-
-        // AND the service is prepared to delete the beer
-        given(beerService.deleteById(any(UUID.class))).willReturn(beerDTO);
-
-        // WHEN the DELETE endpoint is called
-        mockMvc.perform(delete(BeerController.BEER_PATH_ID, beerId))
-
-                // THEN the response status is 200 OK
-                .andExpect(status().isOk());
-
-        // AND the service was called with the correct ID
-        ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
-        verify(beerService).deleteById(captor.capture());
-
-        assertEquals(beerId, captor.getValue());
-    }
-
-    @Test
-    void givenValidBeerPayload_whenPostBeer_thenReturn201Created() throws Exception {
+    void givenValidBeerPayload_whenPostBeer_thenReturn201CreatedAndBeer() throws Exception {
 
         // GIVEN a valid beer payload
         UUID beerId = beerDTO.getBeerId();
@@ -107,11 +85,67 @@ class BeerControllerTest {
 
                 // AND the Location header points to the new resource
                 .andExpect(header().string("Location",
-                        "/api/v1/beerDTO/" + beerId));
+                        "/api/v1/beer/" + beerId));
     }
 
     @Test
-    void givenValidUpdatedBeerPayload_whenUpdateBeer_thenReturn200Ok() throws Exception {
+    void givenValidBeerId_whenGetBeerById_thenReturn200OkAndBeerJson() throws Exception {
+
+        // GIVEN a valid beer ID
+        UUID beerId = beerDTO.getBeerId();
+
+        // AND the service returns the beer
+        given(beerService.getBeerById(eq(beerId))).willReturn(beerDTO);
+
+        // WHEN the GET-by-ID endpoint is called
+        mockMvc.perform(get(BeerController.BEER_PATH_ID, beerId))
+
+                // THEN the response status is 200 OK
+                .andExpect(status().isOk())
+
+                // AND the response is JSON
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // AND the returned beer matches the expected values
+                .andExpect(jsonPath("$.beerId", is(beerId.toString())))
+                .andExpect(jsonPath("$.beerName", is("Galaxy Cat")));
+    }
+
+    @Test
+    void testListBeers() throws Exception {
+
+        // GIVEN a list of beers returned by the service
+        given(beerService.listBeers()).willReturn(beerDTOList);
+
+        // WHEN the GET collection endpoint is called
+        mockMvc.perform(get(BeerController.BEER_PATH))
+
+                // THEN the response status is 200 OK
+                .andExpect(status().isOk())
+
+                // AND the response is JSON
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // AND exactly one beer is returned
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    void givenNonExistingBeerId_whenGetBeerById_thenReturn404NotFound() throws Exception {
+
+        // GIVEN the service throws NotFoundException
+        given(beerService.getBeerById(any(UUID.class)))
+                .willThrow(NotFoundException.class);
+
+        // WHEN the GET-by-ID endpoint is called with a random ID
+        mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
+
+                // THEN the response status is 404 NOT FOUND
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void givenValidUpdatedBeerPayload_whenUpdateBeer_thenReturn200OkAndBeer() throws Exception {
 
         // GIVEN a valid beer ID and updated payload
         UUID beerId = beerDTO.getBeerId();
@@ -130,7 +164,7 @@ class BeerControllerTest {
 
                 // AND the Location header is returned
                 .andExpect(header().string("Location",
-                        "/api/v1/beerDTO/" + beerId));
+                        "/api/v1/beer/" + beerId));
 
         // AND the service was invoked correctly
         verify(beerService).updateBeer(eq(beerId), any(BeerDTO.class));
@@ -156,7 +190,7 @@ class BeerControllerTest {
 
                 // AND the Location header is returned
                 .andExpect(header().string("Location",
-                        "/api/v1/beerDTO/" + beerId));
+                        "/api/v1/beer/" + beerId));
 
         // AND the service received the correct arguments
         ArgumentCaptor<UUID> idCaptor = ArgumentCaptor.forClass(UUID.class);
@@ -169,58 +203,24 @@ class BeerControllerTest {
     }
 
     @Test
-    void testListBeers() throws Exception {
-
-        // GIVEN a list of beers returned by the service
-        given(beerService.listBeers()).willReturn(beerDTOList);
-
-        // WHEN the GET collection endpoint is called
-        mockMvc.perform(get(BeerController.BEER_PATH))
-
-                // THEN the response status is 200 OK
-                .andExpect(status().isOk())
-
-                // AND the response is JSON
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-
-                // AND exactly one beer is returned
-                .andExpect(jsonPath("$.length()", is(1)));
-    }
-
-    @Test
-    void givenValidBeerId_whenGetBeerById_thenReturn200OkAndBeerJson() throws Exception {
+    void givenValidBeerId_whenDeleteBeer_thenReturn200Ok() throws Exception {
 
         // GIVEN a valid beer ID
         UUID beerId = beerDTO.getBeerId();
 
-        // AND the service returns the beer
-        given(beerService.getBeerById(any(UUID.class))).willReturn(beerDTO);
+        // AND the service is prepared to delete the beer
+        given(beerService.deleteById(any(UUID.class))).willReturn(beerDTO);
 
-        // WHEN the GET-by-ID endpoint is called
-        mockMvc.perform(get(BeerController.BEER_PATH_ID, beerId))
+        // WHEN the DELETE endpoint is called
+        mockMvc.perform(delete(BeerController.BEER_PATH_ID, beerId))
 
                 // THEN the response status is 200 OK
-                .andExpect(status().isOk())
+                .andExpect(status().isOk());
 
-                // AND the response is JSON
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        // AND the service was called with the correct ID
+        ArgumentCaptor<UUID> captor = ArgumentCaptor.forClass(UUID.class);
+        verify(beerService).deleteById(captor.capture());
 
-                // AND the returned beer matches the expected values
-                .andExpect(jsonPath("$.beerId", is(beerId.toString())))
-                .andExpect(jsonPath("$.beerName", is("Galaxy Cat")));
-    }
-
-    @Test
-    void givenNonExistingBeerId_whenGetBeerById_thenReturn404NotFound() throws Exception {
-
-        // GIVEN the service throws NotFoundException
-        given(beerService.getBeerById(any(UUID.class)))
-                .willThrow(NotFoundException.class);
-
-        // WHEN the GET-by-ID endpoint is called with a random ID
-        mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
-
-                // THEN the response status is 404 NOT FOUND
-                .andExpect(status().isNotFound());
+        assertEquals(beerId, captor.getValue());
     }
 }
