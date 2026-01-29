@@ -9,7 +9,9 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
+
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 class BeerRepositoryTest {
@@ -24,7 +26,6 @@ class BeerRepositoryTest {
     @BeforeAll
     static void setUp() {
         beer = Beer.builder()
-                .beerId(UUID.randomUUID())
                 .beerName("Galaxy Cat")
                 .beerStyle(BeerStyle.PALE_ALE)
                 .upc("123456789012")
@@ -35,10 +36,14 @@ class BeerRepositoryTest {
     }
     @Test
     void givenValidBeer_whenSavingBeer_thenReturnBeerSaved(){
+        // GIVEN
 
+        // WHEN
+        Beer savedBeer = beerRepository.save(beer);
 
-        Beer beerSaved = beerRepository.save(beer);
-
+        // THEN
+        assertThat(savedBeer).isNotNull();
+        assertThat(savedBeer.getBeerId()).isNotNull();
 
 
     }
