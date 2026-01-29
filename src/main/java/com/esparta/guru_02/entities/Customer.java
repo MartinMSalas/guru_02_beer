@@ -1,12 +1,11 @@
-package com.esparta.guru_02.model;
+package com.esparta.guru_02.entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,27 +19,41 @@ import java.util.UUID;
  * Project Name: guru-02
  * Description: beExcellent
  */
-@Data
+
+@Entity
+@Table(name = "customer")
+@EntityListeners(AuditingEntityListener.class)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class CustomerDTO {
+public class Customer {
 
-
-
+    @Id
+    @GeneratedValue
+    @Column(nullable = false, updatable = false)
     private UUID id;
-    @NotBlank(message = "Beer name must not be blank")
-    @Size(max = 255, message = "Beer name must be at most 255 characters")
+
+    @Column(nullable = false, length = 255)
     private String customerName;
+
     /* =========================
-    AUDITING
-    ========================= */
+       AUDITING
+       ========================= */
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
     private Instant createdDate;
 
+    @LastModifiedDate
+    @Column(nullable = false)
     private Instant lastModifiedDate;
 
     /* =========================
        OPTIMISTIC LOCKING
-       Used for optimistic locking (copied from entity, enforced by JPA)
-    ========================= */
-    private Long version;
+       ========================= */
 
+    @Version
+    private Long version;
 }

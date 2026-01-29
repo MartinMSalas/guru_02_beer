@@ -39,7 +39,7 @@ public class BeerController {
     public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
         log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/beerDTO/" + beerDTO.getId().toString());
+        headers.add("Location","/api/v1/beerDTO/" + beerDTO.getBeerId().toString());
         return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
     }
 
@@ -48,7 +48,7 @@ public class BeerController {
         log.debug("In BeerController.updateBeer() with id: {}", beerId);
         BeerDTO beerDTOUpdated = beerService.updateBeer(beerId, beerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/beerDTO/" + beerDTOUpdated.getId().toString());
+        headers.add("Location","/api/v1/beerDTO/" + beerDTOUpdated.getBeerId().toString());
         return new ResponseEntity<>(beerDTOUpdated, headers, HttpStatus.OK);
 
     }
@@ -59,10 +59,12 @@ public class BeerController {
     }
 
     @GetMapping(BEER_PATH_ID)
-    public BeerDTO getBeer(@PathVariable UUID beerId){
+    public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId){
         log.debug("In BeerController.getBeer() with id: {}", beerId);
-
-        return beerService.getBeerById(beerId).orElseThrow(NotFoundException::new);
+        BeerDTO beerDTO = beerService.getBeerById(beerId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", "/api/v1/beerDTO/" + beerDTO.getBeerId().toString());
+        return new ResponseEntity<>(beerDTO,headers, HttpStatus.OK) ;
     }
     @DeleteMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> deleteBeer(@PathVariable UUID beerId){
@@ -77,7 +79,7 @@ public class BeerController {
         log.debug("In BeerController.patchBeer() with id: {}", beerId);
         BeerDTO patchedBeerDTO = beerService.patchBeer(beerId, beerDTO);
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location", "/api/v1/beerDTO/" + patchedBeerDTO.getId().toString());
+        headers.add("Location", "/api/v1/beerDTO/" + patchedBeerDTO.getBeerId().toString());
         return new ResponseEntity<>(patchedBeerDTO, headers, HttpStatus.OK);
     }
 

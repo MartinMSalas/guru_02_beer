@@ -1,6 +1,10 @@
 package com.esparta.guru_02.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,38 +23,43 @@ import java.util.UUID;
  * Project Name: guru-02
  * Description: beExcellent
  */
-@Entity
-@EntityListeners(AuditingEntityListener.class)
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BeerDTO {
 
-    @Id
-    private UUID id;
-    private String beerName;
-    private BeerStyle beerStyle;
-    private String upc;
-    private Integer quantityOnHand;
-    private BigDecimal price;
 
+    private UUID beerId;
+    @NotBlank(message = "Beer name must not be blank")
+    @Size(max = 255, message = "Beer name must be at most 255 characters")
+    private String beerName;
+
+    @NotNull(message = "Beer style is required")
+    private BeerStyle beerStyle;
+
+    @NotBlank(message = "UPC must not be blank")
+    @Size(max = 50, message = "UPC must be at most 50 characters")
+    private String upc;
+
+    @PositiveOrZero(message = "Quantity on hand must be zero or positive")
+    private Integer quantityOnHand;
+
+    @NotNull(message = "Price is required")
+    @PositiveOrZero(message = "Price must be zero or positive")
+    private BigDecimal price;
     /* =========================
         AUDITING
         ========================= */
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
     private Instant createdDate;
 
-    @LastModifiedDate
-    @Column(nullable = false)
     private Instant lastModifiedDate;
 
     /* =========================
-       OPTIMISTIC LOCKING
+       OPTIMISTIC LOCKING (information only)
+       Used for optimistic locking (copied from entity, enforced by JPA)
        ========================= */
-    @Version
     private Long version;
-
 
 }
