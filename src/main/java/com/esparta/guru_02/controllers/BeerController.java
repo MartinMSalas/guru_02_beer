@@ -21,7 +21,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @RestController
 @Slf4j
-
 public class BeerController {
 
     public static final String BEER_PATH = "/api/v1/beer";

@@ -105,11 +105,10 @@ class CustomerControllerTest {
 
                 .andExpect(jsonPath("$.customerId",is(customerId.toString())))
                 .andExpect(jsonPath("$.customerName", is("PoNCio")));
-
     }
 
     @Test
-    void testGetCustomersList() throws Exception {
+    void givenCustomersExist_whenGetBeers_thenReturn200OkAndSingleBeer() throws Exception {
 
         // GIVEN a list of customers returned by the service
         given(customerService.getAllCustomers()).willReturn(customersList);

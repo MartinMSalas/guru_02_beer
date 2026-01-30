@@ -112,7 +112,7 @@ class BeerControllerTest {
     }
 
     @Test
-    void testListBeers() throws Exception {
+    void givenBeersExist_whenGetBeers_thenReturn200OkAndSingleBeer() throws Exception {
 
         // GIVEN a list of beers returned by the service
         given(beerService.listBeers()).willReturn(beerDTOList);
