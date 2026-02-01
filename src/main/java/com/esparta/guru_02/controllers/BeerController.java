@@ -1,9 +1,12 @@
 package com.esparta.guru_02.controllers;
 
+import com.esparta.guru_02.exceptions.BadRequestException;
 import com.esparta.guru_02.model.BeerDTO;
+import com.esparta.guru_02.model.CustomerDTO;
 import com.esparta.guru_02.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-
 /*
  * Author: M
  * Date: 24-Jan-26
@@ -20,19 +22,29 @@ import java.util.UUID;
  */
 @AllArgsConstructor
 @RestController
+@RequestMapping(BeerController.BEER_PATH)
 @Slf4j
 public class BeerController {
 
     public static final String BEER_PATH = "/api/v1/beer";
-    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+    public static final String BEER_PATH_ID =  "/{beerId}";
+
+    private static final String HEADER_TOTAL_COUNT = "X-Total-Count";
 
     private final BeerService beerService;
 
-//    @GetMapping(BEER_PATH_ID)
-//    public BeerDTO getBeerById(UUID id){
-//        log.debug("In BeerController.getBeerById() with id: {}", id);
-//        return beerService.getBeerById(id);
-//    }
+
+    @PostMapping()
+    public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
+        log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
+        BeerDTO beerDTOSaved =  beerService.saveNewBeer(beerDTO);
+        log.debug("Saved BeerDTO: {}", beerDTOSaved);
+
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location","/api/v1/beer/" + beerDTOSaved.getBeerId().toString());
+        return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
+    }
 
     @GetMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId){
@@ -43,22 +55,34 @@ public class BeerController {
         return new ResponseEntity<>(beerDTO,headers, HttpStatus.OK) ;
     }
 
-    @GetMapping(BEER_PATH)
-    public List<BeerDTO> listBeers(){
-        log.debug("In BeerController.listBeers()");
-        return beerService.listBeers();
-    }
 
-    @PostMapping(BEER_PATH)
-    public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
-        log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
-        BeerDTO beerDTOSaved =  beerService.saveNewBeer(beerDTO);
-        log.debug("Saved BeerDTO: {}", beerDTOSaved);
+    /**
+     * Returns all beers.
+     *
+     * Contract:
+     * - 200 OK with list (possibly empty)
+     * - Never returns null
+     */
+    @GetMapping()
+    public ResponseEntity<List<BeerDTO>> getAllBeers(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size
+            // @RequestParam(required = false) Integer size
+    ) {
 
+        log.debug("GET /api/v1/beers?page={}, size={}", page, size);
 
+        if ((page < 0) || ( size <= 0) || size > 100) {
+            throw new BadRequestException("Invalid pagination parameters");
+        }
+
+        // For now, ignoring pagination parameters
+        List<BeerDTO> beers = beerService.getAllBeers();
+        // Add X-Total-Count header if pagination is implemented in the future
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Location","/api/v1/beer/" + beerDTOSaved.getBeerId().toString());
-        return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
+        headers.setCacheControl(CacheControl.noCache().mustRevalidate());
+        headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));
+        return new ResponseEntity<>(beers, headers, HttpStatus.OK);
     }
     @PutMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> updateBeer(@PathVariable UUID beerId, @RequestBody BeerDTO beerDTO){
@@ -89,3 +113,4 @@ public class BeerController {
 
 
 }
+

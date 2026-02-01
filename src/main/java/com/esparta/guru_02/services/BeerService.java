@@ -17,7 +17,7 @@ public interface BeerService {
 
     BeerDTO getBeerById(UUID id);
 
-    List<BeerDTO>  listBeers();
+    List<BeerDTO>  getAllBeers();
 
     BeerDTO saveNewBeer(BeerDTO BeerDTO);
 

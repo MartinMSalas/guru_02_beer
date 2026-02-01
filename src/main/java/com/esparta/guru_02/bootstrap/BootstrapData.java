@@ -32,39 +32,23 @@ public class BootstrapData implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final BeerRepository beerRepository;
 
-
-
     @Override
     public void run(String... args) {
         log.debug("In bootstrap; ");
-        /* ========= Beer ============== */
+        // ======== Beer ======== */
         long beerCount = beerRepository.count();
-        if(beerCount== 0) {
+        if(beerCount == 0) {
             log.debug("Loading Beer Data");
-            beerRepository.saveAll(List.of(
-                    Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.PALE_ALE).upc("123456789012")
-                            .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
-                    Beer.builder().beerName("Crank").beerStyle(BeerStyle.PALE_ALE).upc("123456789013")
-                            .price(new BigDecimal("11.99")).quantityOnHand(1223).build(),
-                    Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.IPA).upc("123456789014")
-                            .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
-            ));
+            loadBeerData();
             beerCount = beerRepository.count();
         }
-
         /* ========= Customer ======== */
         long customerCount = customerRepository.count();
-        if( customerCount == 0) {
+        if(customerCount == 0) {
             log.debug("Loading Customer Data");
-
-            customerRepository.saveAll(List.of(
-                    Customer.builder().customerName("Don Pepe").build(),
-                    Customer.builder().customerName("Maria Luisa").build(),
-                    Customer.builder().customerName("Juan Carlos").build()
-            ));
+            loadCustomerData();
             customerCount = customerRepository.count();
         }
-
 
         /* ========= Log ========= */
         log.debug("Beer Count: {}", beerCount);
@@ -72,5 +56,22 @@ public class BootstrapData implements CommandLineRunner {
         log.debug("Customer Count: {}", customerCount);
         log.debug("Saved Customer: {}", customerRepository.findFirstByOrderByCreatedDateAsc().orElseThrow(() -> new NoSuchElementException("No customers found after bootstrap")));
 
+    }
+    private void loadBeerData() {
+        beerRepository.saveAll(List.of(
+                Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.PALE_ALE).upc("123456789012")
+                        .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
+                Beer.builder().beerName("Crank").beerStyle(BeerStyle.PALE_ALE).upc("123456789013")
+                        .price(new BigDecimal("11.99")).quantityOnHand(1223).build(),
+                Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.IPA).upc("123456789014")
+                        .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
+        ));
+    }
+    private void loadCustomerData() {
+        customerRepository.saveAll(List.of(
+                Customer.builder().customerName("Don Pepe").build(),
+                Customer.builder().customerName("Maria Luisa").build(),
+                Customer.builder().customerName("Juan Carlos").build()
+        ));
     }
 }

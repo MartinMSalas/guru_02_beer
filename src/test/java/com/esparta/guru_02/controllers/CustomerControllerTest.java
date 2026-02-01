@@ -2,6 +2,7 @@ package com.esparta.guru_02.controllers;
 
 import com.esparta.guru_02.configuration.JpaAuditingConfig;
 
+import com.esparta.guru_02.exceptions.NotFoundException;
 import com.esparta.guru_02.model.CustomerDTO;
 
 import com.esparta.guru_02.services.CustomerService;
@@ -52,6 +53,9 @@ class CustomerControllerTest {
     @MockitoBean
     CustomerService customerService;
 
+    public static final String CUSTOMER_PATH = "/api/v1/customer";
+    public static final String CUSTOMER_PATH_ID = CUSTOMER_PATH + "/{customerId}";
+
     static CustomerDTO customerDTO;
     static List<CustomerDTO> customersList;
 
@@ -71,7 +75,7 @@ class CustomerControllerTest {
         given(customerService.saveNewCustomer(any(CustomerDTO.class))).willReturn(customerDTO);
 
         // WHEN the POST endpoint is called
-        mockMvc.perform(post(CustomerController.CUSTOMER_PATH)
+        mockMvc.perform(post(CUSTOMER_PATH)
 
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerDTO)))
@@ -93,7 +97,7 @@ class CustomerControllerTest {
         given(customerService.getCustomerById(eq(customerId))).willReturn(customerDTO);
 
         // WHEN the GET-by-ID endpoint is called
-        mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID,  customerId)
+        mockMvc.perform(get(CUSTOMER_PATH_ID,  customerId)
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status is 200 OK
 
@@ -113,7 +117,7 @@ class CustomerControllerTest {
         // GIVEN a list of customers returned by the service
         given(customerService.getAllCustomers()).willReturn(customersList);
         // WHEN the GET collection endpoint is called
-        mockMvc.perform(get(CustomerController.CUSTOMER_PATH)
+        mockMvc.perform(get(CUSTOMER_PATH)
                         .accept(MediaType.APPLICATION_JSON))
                 // THEN the response status is 200 OK
                 .andExpect(status().isOk())
@@ -129,7 +133,7 @@ class CustomerControllerTest {
         given(customerService.getCustomerById(any(UUID.class))).willThrow(NotFoundException.class);
 
         // WJHEN the GET-by-ID endpoint is called
-        mockMvc.perform(get(CustomerController.CUSTOMER_PATH_ID, UUID.randomUUID()))
+        mockMvc.perform(get(CUSTOMER_PATH_ID, UUID.randomUUID()))
                 // THEN the response status is 404 Not Found
                 .andExpect(status().isNotFound());
 
@@ -144,7 +148,7 @@ class CustomerControllerTest {
 
         // WHEN the PUT endpoint is called
 
-        mockMvc.perform(put(CustomerController.CUSTOMER_PATH_ID,  customerId)
+        mockMvc.perform(put(CUSTOMER_PATH_ID,  customerId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(customerDTO)))
@@ -168,7 +172,7 @@ class CustomerControllerTest {
         given(customerService.patchCustomer(eq(customerId), any(CustomerDTO.class))).willReturn(customerDTO);
 
         // WHEN the PATCH endpoint is called
-        mockMvc.perform(patch(CustomerController.CUSTOMER_PATH_ID, customerId)
+        mockMvc.perform(patch(CUSTOMER_PATH_ID, customerId)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(patchedCustomer)))
@@ -187,7 +191,7 @@ class CustomerControllerTest {
 
 
         // when & then
-        mockMvc.perform(delete(CustomerController.CUSTOMER_PATH_ID, customerId)
+        mockMvc.perform(delete(CUSTOMER_PATH_ID, customerId)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 

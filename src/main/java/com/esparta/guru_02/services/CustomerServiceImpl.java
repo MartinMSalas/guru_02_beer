@@ -1,12 +1,13 @@
 package com.esparta.guru_02.services;
 
-import com.esparta.guru_02.entities.Beer;
+
 import com.esparta.guru_02.entities.Customer;
+import com.esparta.guru_02.exceptions.NotFoundException;
 import com.esparta.guru_02.mappers.CustomerMapper;
-import com.esparta.guru_02.model.BeerDTO;
+
 import com.esparta.guru_02.model.CustomerDTO;
 import com.esparta.guru_02.repositories.CustomerRepository;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IllegalArgumentException("Customer ID must be provided");
         }
         Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
                         "Customer not found with id " + customerId
                 ));
 
@@ -73,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IllegalArgumentException("Customer ID must be provided for update");
         }
         Customer customerLoaded = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
                         "Customer not found with id " + customerId
                 ));
         log.debug("Loaded Customer entity for update: {}", customerLoaded);
@@ -98,7 +99,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IllegalArgumentException("Customer ID must be provided for deletion");
         }
         Customer customerToDelete = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
                         "Customer not found with id " + customerId
                 ));
         log.debug("Loaded Customer entity for deletion: {}", customerToDelete);
@@ -113,7 +114,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IllegalArgumentException("Customer ID must be provided for patch");
         }
         Customer customerLoaded = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(
+                .orElseThrow(() -> new NotFoundException(
                         "Customer not found with id " + customerId
                 ));
         log.debug("Loaded Customer entity for patching: {}", customerLoaded);

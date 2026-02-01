@@ -1,6 +1,7 @@
 package com.esparta.guru_02.controllers;
 
 import com.esparta.guru_02.configuration.JpaAuditingConfig;
+import com.esparta.guru_02.exceptions.NotFoundException;
 import com.esparta.guru_02.model.BeerDTO;
 import com.esparta.guru_02.model.BeerStyle;
 import com.esparta.guru_02.services.BeerService;
@@ -47,6 +48,10 @@ class BeerControllerTest {
     @MockitoBean
     BeerService beerService;
 
+
+    public static final String BEER_PATH = "/api/v1/beer";
+    public static final String BEER_PATH_ID = BEER_PATH + "/{beerId}";
+
     static BeerDTO beerDTO;
     static List<BeerDTO> beerDTOList;
 
@@ -76,7 +81,7 @@ class BeerControllerTest {
         given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerDTO);
 
         // WHEN the POST endpoint is called
-        mockMvc.perform(post(BeerController.BEER_PATH)
+        mockMvc.perform(post( BEER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
 
@@ -98,7 +103,7 @@ class BeerControllerTest {
         given(beerService.getBeerById(eq(beerId))).willReturn(beerDTO);
 
         // WHEN the GET-by-ID endpoint is called
-        mockMvc.perform(get(BeerController.BEER_PATH_ID, beerId))
+        mockMvc.perform(get(BEER_PATH_ID, beerId))
 
                 // THEN the response status is 200 OK
                 .andExpect(status().isOk())
@@ -115,10 +120,10 @@ class BeerControllerTest {
     void givenBeersExist_whenGetBeers_thenReturn200OkAndSingleBeer() throws Exception {
 
         // GIVEN a list of beers returned by the service
-        given(beerService.listBeers()).willReturn(beerDTOList);
+        given(beerService.getAllBeers()).willReturn(beerDTOList);
 
         // WHEN the GET collection endpoint is called
-        mockMvc.perform(get(BeerController.BEER_PATH))
+        mockMvc.perform(get( BEER_PATH))
 
                 // THEN the response status is 200 OK
                 .andExpect(status().isOk())
@@ -138,7 +143,7 @@ class BeerControllerTest {
                 .willThrow(NotFoundException.class);
 
         // WHEN the GET-by-ID endpoint is called with a random ID
-        mockMvc.perform(get(BeerController.BEER_PATH_ID, UUID.randomUUID()))
+        mockMvc.perform(get(BEER_PATH_ID, UUID.randomUUID()))
 
                 // THEN the response status is 404 NOT FOUND
                 .andExpect(status().isNotFound());
@@ -155,7 +160,7 @@ class BeerControllerTest {
                 .willReturn(beerDTO);
 
         // WHEN the PUT endpoint is called
-        mockMvc.perform(put(BeerController.BEER_PATH_ID, beerId)
+        mockMvc.perform(put(BEER_PATH_ID, beerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
 
@@ -181,7 +186,7 @@ class BeerControllerTest {
                 .willReturn(beerDTO);
 
         // WHEN the PATCH endpoint is called
-        mockMvc.perform(patch(BeerController.BEER_PATH_ID, beerId)
+        mockMvc.perform(patch(BEER_PATH_ID, beerId)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(beerDTO)))
 
@@ -212,7 +217,7 @@ class BeerControllerTest {
         given(beerService.deleteById(any(UUID.class))).willReturn(beerDTO);
 
         // WHEN the DELETE endpoint is called
-        mockMvc.perform(delete(BeerController.BEER_PATH_ID, beerId))
+        mockMvc.perform(delete(BEER_PATH_ID, beerId))
 
                 // THEN the response status is 200 OK
                 .andExpect(status().isOk());

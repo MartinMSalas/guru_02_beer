@@ -14,11 +14,13 @@ public class Guru02Application {
 	public static void main(String[] args) {
 
 		ApplicationContext ctx = SpringApplication.run(Guru02Application.class, args);
-
+/*
 		MyController controller = ctx.getBean(MyController.class);
 
 		System.out.println("In main: " + controller);
 		System.out.println(controller.sayHello());
+
+ */
 	}
 
 }
