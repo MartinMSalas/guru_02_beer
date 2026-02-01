@@ -94,6 +94,27 @@ class BeerControllerTest {
     }
 
     @Test
+    void givenInvalidBeerPayload_whenPostBeer_thenReturn400BadRequest() throws Exception {
+
+        // GIVEN an invalid beer payload (missing beerName)
+        BeerDTO invalidBeerDTO = BeerDTO.builder()
+                .beerStyle(BeerStyle.PALE_ALE)
+                .upc("123456789012")
+                .price(new BigDecimal("12.99"))
+                .quantityOnHand(1223)
+                .build();
+        // AND the service returns the created beer
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerDTO);
+
+        // WHEN the POST endpoint is called
+        mockMvc.perform(post( BEER_PATH)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(invalidBeerDTO)))
+
+                // THEN the response status is 400 BAD REQUEST
+                .andExpect(status().isBadRequest());
+    }
+    @Test
     void givenValidBeerId_whenGetBeerById_thenReturn200OkAndBeerJson() throws Exception {
 
         // GIVEN a valid beer ID

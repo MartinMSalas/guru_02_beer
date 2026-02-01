@@ -10,6 +10,7 @@ import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class BeerController {
 
 
     @PostMapping()
-    public ResponseEntity<BeerDTO> createNewBeer(@RequestBody BeerDTO beerDTO){
+    public ResponseEntity<BeerDTO> createNewBeer(@Validated @RequestBody BeerDTO beerDTO){
         log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
         BeerDTO beerDTOSaved =  beerService.saveNewBeer(beerDTO);
         log.debug("Saved BeerDTO: {}", beerDTOSaved);

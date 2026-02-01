@@ -1,5 +1,6 @@
 package com.esparta.guru_02.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -37,6 +38,7 @@ public class BeerDTO {
     @Size(max = 50, message = "UPC must be at most 50 characters")
     private String upc;
 
+    @NotNull(message = "Quantity on hand is required")
     @PositiveOrZero(message = "Quantity on hand must be zero or positive")
     private Integer quantityOnHand;
 
@@ -46,14 +48,16 @@ public class BeerDTO {
     /* =========================
         AUDITING
         ========================= */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant createdDate;
-
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant lastModifiedDate;
 
     /* =========================
        OPTIMISTIC LOCKING (information only)
        Used for optimistic locking (copied from entity, enforced by JPA)
        ========================= */
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long version;
 
 }
