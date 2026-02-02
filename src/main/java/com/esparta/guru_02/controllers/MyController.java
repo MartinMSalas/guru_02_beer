@@ -10,7 +10,7 @@ package com.esparta.guru_02.controllers;
 import com.esparta.guru_02.services.GreetingService;
 import org.springframework.stereotype.Controller;
 
-@Controller
+//@Controller
 public class MyController {
 
     private final GreetingService  greetingService;

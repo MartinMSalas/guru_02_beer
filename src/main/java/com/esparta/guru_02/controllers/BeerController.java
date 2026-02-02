@@ -2,7 +2,7 @@ package com.esparta.guru_02.controllers;
 
 import com.esparta.guru_02.exceptions.BadRequestException;
 import com.esparta.guru_02.model.BeerDTO;
-import com.esparta.guru_02.model.CustomerDTO;
+
 import com.esparta.guru_02.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -31,8 +33,9 @@ import java.util.UUID;
 public class Customer {
 
     @Id
-    @GeneratedValue
-    @Column(nullable = false, updatable = false)
+    @UuidGenerator
+    @JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
+    @Column(name = "beer_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
     private UUID customerId;
 
     @Column(nullable = false, length = 255)
