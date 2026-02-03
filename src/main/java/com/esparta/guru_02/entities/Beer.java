@@ -62,6 +62,7 @@ public class Beer {
     @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
+
     /* =========================
         AUDITING
         ========================= */

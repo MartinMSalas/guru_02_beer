@@ -35,12 +35,15 @@ public class Customer {
     @Id
     @UuidGenerator
     @JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
-    @Column(name = "beer_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
+    @Column(name = "customer_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
     private UUID customerId;
 
     @Column(nullable = false, length = 255)
     private String customerName;
 
+
+    @Column(length = 255)
+    private String email;
     /* =========================
        AUDITING
        ========================= */
