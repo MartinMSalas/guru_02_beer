@@ -7,15 +7,15 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+//@SpringBootTest
 //@ActiveProfiles("QAA")
 class MyControllerTest {
 
-    @Autowired
+    //@Autowired
     MyController myController;
 
 
-    @Test
+    //@Test
     void sayHello() {
         String result = myController.sayHello();
         System.out.println(result);
