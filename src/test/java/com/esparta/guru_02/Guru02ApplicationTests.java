@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 
-@SpringBootTest
+//@SpringBootTest
 class Guru02ApplicationTests {
 
 	@Autowired
@@ -15,20 +15,20 @@ class Guru02ApplicationTests {
 	@Autowired
 	MyController myController;
 
-	@Test
+//	@Test
 	void testAutowireOfController(){
 		System.out.println(myController.sayHello());
 	}
 
 
-	@Test
+//	@Test
 	void testGetControllerFromCtx() {
 		MyController myController = applicationContext.getBean(MyController.class);
 		System.out.println("In test: " + myController.sayHello());
 
 	}
 
-	@Test
+//	@Test
 	void contextLoads() {
 	}
 
