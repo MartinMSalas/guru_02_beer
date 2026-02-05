@@ -12,5 +12,6 @@ import java.util.List;
  */
 public interface BeerCSVService {
 
+
     List<BeerCSVRecord> beerCSVRecords(String path);
 }
