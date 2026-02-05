@@ -11,6 +11,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -36,8 +37,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @Execution(ExecutionMode.SAME_THREAD)
 class BeerCSVServiceImplTest {
 
-    private static final String VALID_EMPTY_PATH =
+    private static final String VALID_EMPTY_TEST_PATH =
             "src/test/resources/empty-beer.csv";
+    private static final String VALID_BEER_CSV_TEST_PATH = "src/test/resources/valid-beer.csv";
 
     private final BeerCSVServiceImpl service = new BeerCSVServiceImpl();
 
@@ -90,12 +92,11 @@ class BeerCSVServiceImplTest {
     /* =========================================================
        VALID PATH – CONTRACT ENFORCEMENT
        ========================================================= */
-
     @Test
     @Order(4)
     void givenValidPath_whenBeerCSVRecordsCalled_thenReturnNonNullList() {
         // given
-        String path = VALID_EMPTY_PATH;
+        String path = VALID_BEER_CSV_TEST_PATH;
 
         // when
         List<BeerCSVRecord> records = service.beerCSVRecords(path);
@@ -105,13 +106,14 @@ class BeerCSVServiceImplTest {
                 records,
                 "Service must never return null for a valid path"
         );
+        assertThat(records.size()).isGreaterThan(0);
     }
 
     @Test
     @Order(5)
     void givenValidPathWithEmptyFile_whenBeerCSVRecordsCalled_thenReturnEmptyList() {
         // given
-        String path = VALID_EMPTY_PATH;
+        String path = VALID_EMPTY_TEST_PATH;
 
         // when
         List<BeerCSVRecord> records = service.beerCSVRecords(path);
@@ -132,11 +134,11 @@ class BeerCSVServiceImplTest {
     @Order(6)
     void givenReturnedList_whenAddAttempted_thenThrowUnsupportedOperationException() {
         // given
-        List<BeerCSVRecord> records = service.beerCSVRecords(VALID_EMPTY_PATH);
+        List<BeerCSVRecord> records = service.beerCSVRecords(VALID_BEER_CSV_TEST_PATH);
 
         // sanity
         assertNotNull(records, "Returned list must not be null");
-
+        assertThat(records.size()).isGreaterThan(0);
         // when / then
         assertThrows(
                 UnsupportedOperationException.class,
@@ -149,10 +151,11 @@ class BeerCSVServiceImplTest {
     @Order(7)
     void givenReturnedList_whenClearAttempted_thenThrowUnsupportedOperationException() {
         // given
-        List<BeerCSVRecord> records = service.beerCSVRecords(VALID_EMPTY_PATH);
-
+        List<BeerCSVRecord> records = service.beerCSVRecords(VALID_BEER_CSV_TEST_PATH);
+        assertThat(records.size()).isGreaterThan(0);
         // sanity
         assertNotNull(records, "Returned list must not be null");
+        assertThat(records.size()).isGreaterThan(0);
 
         // when / then
         assertThrows(
@@ -170,7 +173,7 @@ class BeerCSVServiceImplTest {
     @Order(8)
     void givenValidPath_whenCalledMultipleTimes_thenResultsAreEqualButNotSameInstance() {
         // given
-        String path = VALID_EMPTY_PATH;
+        String path = VALID_BEER_CSV_TEST_PATH;
 
         // when
         List<BeerCSVRecord> first = service.beerCSVRecords(path);
@@ -197,11 +200,11 @@ class BeerCSVServiceImplTest {
     @Order(9)
     void givenValidPath_whenRecordsReturned_thenAllElementsAreBeerCSVRecord() {
         // given
-        String path = VALID_EMPTY_PATH;
+        String path = VALID_BEER_CSV_TEST_PATH;
 
         // when
         List<BeerCSVRecord> records = service.beerCSVRecords(path);
-
+        assertThat(records.size()).isGreaterThan(0);
         // then
         assertNotNull(records, "Returned list must not be null");
 

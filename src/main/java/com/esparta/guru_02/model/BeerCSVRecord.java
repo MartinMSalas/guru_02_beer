@@ -25,7 +25,7 @@ public class BeerCSVRecord {
     @CsvBindByName
     private Double abv;
     @CsvBindByName
-    private Double ibu;
+    private String ibu;
     @CsvBindByName(column = "id")
     private Integer beerId;
     @CsvBindByName

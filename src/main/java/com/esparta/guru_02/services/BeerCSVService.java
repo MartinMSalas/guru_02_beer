@@ -2,6 +2,7 @@ package com.esparta.guru_02.services;
 
 import com.esparta.guru_02.model.BeerCSVRecord;
 
+import java.io.File;
 import java.util.List;
 
 /*
@@ -12,6 +13,8 @@ import java.util.List;
  */
 public interface BeerCSVService {
 
+
+    List<BeerCSVRecord> beerCSVRecords(File file);
 
     List<BeerCSVRecord> beerCSVRecords(String path);
 }

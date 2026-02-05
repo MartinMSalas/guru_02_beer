@@ -39,9 +39,13 @@ public class BootstrapData implements CommandLineRunner {
         long beerCount = beerRepository.count();
         if(beerCount == 0) {
             log.debug("Loading Beer Data");
-            loadBeerData();
+            //loadBeerData();
+            loadCSVBeerData();
             beerCount = beerRepository.count();
         }
+
+        /* ======== Beer CSV  ======== */
+
         /* ========= Customer ======== */
         long customerCount = customerRepository.count();
         if(customerCount == 0) {
@@ -57,8 +61,12 @@ public class BootstrapData implements CommandLineRunner {
         log.debug("Saved Customer: {}", customerRepository.findFirstByOrderByCreatedDateAsc().orElseThrow(() -> new NoSuchElementException("No customers found after bootstrap")));
 
     }
+    private void loadCSVBeerData(){
+
+    }
+
     private void loadBeerData() {
-        beerRepository.saveAll(List.of(
+                beerRepository.saveAll(List.of(
                 Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.PALE_ALE).upc("123456789012")
                         .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
                 Beer.builder().beerName("Crank").beerStyle(BeerStyle.PALE_ALE).upc("123456789013")
@@ -67,11 +75,16 @@ public class BootstrapData implements CommandLineRunner {
                         .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
         ));
     }
+
     private void loadCustomerData() {
         customerRepository.saveAll(List.of(
                 Customer.builder().customerName("Don Pepe").build(),
                 Customer.builder().customerName("Maria Luisa").build(),
                 Customer.builder().customerName("Juan Carlos").build()
         ));
+    }
+
+    private void loadCsvData(){
+
     }
 }
