@@ -1,9 +1,15 @@
 package com.esparta.guru_02.model;
 
+import com.esparta.guru_02.csv.converter.BeerStyleConverter;
+import com.esparta.guru_02.csv.converter.NullableBigDecimalConverter;
+import com.esparta.guru_02.csv.converter.NullableIntegerConverter;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvCustomBindByName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.math.BigDecimal;
 
 /*
  * Author: M
@@ -20,32 +26,44 @@ public class BeerCSVRecord {
 
     @CsvBindByName
     private Integer row;
-    @CsvBindByName(column = "count.x")
+
+    @CsvCustomBindByName(column = "count.x",
+            converter = NullableIntegerConverter.class)
     private Integer count;
-    @CsvBindByName
-    private Double abv;
-    @CsvBindByName
-    private String ibu;
-    @CsvBindByName(column = "id")
+
+    @CsvCustomBindByName(converter = NullableBigDecimalConverter.class)
+    private BigDecimal abv;
+
+    @CsvCustomBindByName(converter = NullableIntegerConverter.class)
+    private Integer ibu;
+
+    @CsvCustomBindByName(column = "id",
+            converter = NullableIntegerConverter.class)
     private Integer beerId;
+
     @CsvBindByName
     private String beer;
-    @CsvBindByName
-    private String style;
-    @CsvBindByName(column = "brewery_id")
+
+    @CsvCustomBindByName( column = "style",
+            converter = BeerStyleConverter.class)
+    private BeerStyle beerStyle;
+
+    @CsvCustomBindByName(column = "brewery_id",
+            converter = NullableIntegerConverter.class)
     private Integer breweryId;
-    @CsvBindByName
-    private Double ounces;
-    @CsvBindByName
-    private String style2;
-    @CsvBindByName(column = "count.y")
-    private Integer count_y;
+
+    @CsvCustomBindByName(converter = NullableBigDecimalConverter.class)
+    private BigDecimal ounces;
+
     @CsvBindByName
     private String brewery;
+
     @CsvBindByName
     private String city;
+
     @CsvBindByName
     private String state;
+
     @CsvBindByName
     private String label;
 }

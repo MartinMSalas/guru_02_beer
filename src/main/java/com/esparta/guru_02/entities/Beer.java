@@ -23,9 +23,18 @@ import java.util.UUID;
  * Project Name: guru-02
  * Description: beExcellent
  */
-
 @Entity
-@Table(name = "beer")
+@Table(
+        name = "beer",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_beer_external_id", columnNames = "external_beer_id"),
+                @UniqueConstraint(name = "uk_beer_upc", columnNames = "upc")
+        },
+        indexes = {
+                @Index(name = "ix_beer_external_id", columnList = "external_beer_id"),
+                @Index(name = "ix_beer_upc", columnList = "upc")
+        }
+)
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
@@ -34,51 +43,56 @@ import java.util.UUID;
 @Builder
 public class Beer {
 
-    /*
-    Binary UUID
-    @JdbcTypeCode(org.hibernate.type.SqlTypes.BINARY)
-    @Column(name = "beer_id", columnDefinition = "BINARY(16)", updatable = false, nullable = false)
-     */
+    // =========================================================
+    // PRIMARY KEY (technical) - internal identifier
+    // =========================================================
     @Id
     @UuidGenerator
-    // Char UUID
     @JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
-    @Column(name = "beer_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
+    @Column(name = "beer_id", columnDefinition = "CHAR(36)", nullable = false, updatable = false)
     private UUID beerId;
 
-    @Column(nullable = false, length = 255)
+    // =========================================================
+    // BUSINESS KEY (from CSV) - external stable identifier
+    // Maps from BeerCSVRecord column "id"
+    // =========================================================
+    @Column(name = "external_beer_id", nullable = false, updatable = false)
+    private Integer externalBeerId;
+
+    // =========================================================
+    // DOMAIN FIELDS
+    // =========================================================
+    @Column(name = "beer_name", nullable = false, length = 255)
     private String beerName;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 50)
+    @Column(name = "beer_style", nullable = false, length = 50)
     private BeerStyle beerStyle;
 
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(name = "upc", nullable = false, length = 50)
     private String upc;
 
-    @Column(nullable = false)
+    @Column(name = "quantity_on_hand", nullable = false)
     private Integer quantityOnHand;
 
-    @Column(nullable = false, precision = 19, scale = 2)
+    @Column(name = "price", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
 
-
-    /* =========================
-        AUDITING
-        ========================= */
-
+    // =========================================================
+    // AUDITING
+    // =========================================================
     @CreatedDate
-    @Column(nullable = false, updatable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     private Instant createdDate;
 
     @LastModifiedDate
-    @Column(nullable = false)
+    @Column(name = "last_modified_date", nullable = false)
     private Instant lastModifiedDate;
 
-    /* =========================
-       OPTIMISTIC LOCKING
-       ========================= */
-
+    // =========================================================
+    // OPTIMISTIC LOCKING
+    // =========================================================
     @Version
+    @Column(name = "version")
     private Long version;
 }

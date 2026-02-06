@@ -1,14 +1,8 @@
 package com.esparta.guru_02.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.*;
+import lombok.*;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.UUID;
@@ -19,45 +13,52 @@ import java.util.UUID;
  * Project Name: guru-02
  * Description: beExcellent
  */
-
-@Data
-@Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class BeerDTO {
 
+    /* =========================
+       IDENTITY
+       ========================= */
+
     private UUID beerId;
-    @NotBlank(message = "Beer name must not be blank")
-    @Size(max = 255, message = "Beer name must be at most 255 characters")
+
+    /* =========================
+       DOMAIN DATA
+       ========================= */
+
+    @NotBlank
+    @Size(max = 255)
     private String beerName;
 
-    @NotNull(message = "Beer style is required")
+    @NotNull
     private BeerStyle beerStyle;
 
-    @NotBlank(message = "UPC must not be blank")
-    @Size(max = 50, message = "UPC must be at most 50 characters")
+    @NotBlank
+    @Size(max = 50)
     private String upc;
 
-    @NotNull(message = "Quantity on hand is required")
-    @PositiveOrZero(message = "Quantity on hand must be zero or positive")
+    @NotNull
+    @Min(0)
     private Integer quantityOnHand;
 
-    @NotNull(message = "Price is required")
-    @PositiveOrZero(message = "Price must be zero or positive")
+    @NotNull
+    @DecimalMin("0.00")
     private BigDecimal price;
+
     /* =========================
-        AUDITING
-        ========================= */
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+       AUDITING (READ-ONLY)
+       ========================= */
+
     private Instant createdDate;
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Instant lastModifiedDate;
 
     /* =========================
-       OPTIMISTIC LOCKING (information only)
-       Used for optimistic locking (copied from entity, enforced by JPA)
+       OPTIMISTIC LOCKING
        ========================= */
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Long version;
 
+    private Long version;
 }

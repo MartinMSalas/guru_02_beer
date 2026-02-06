@@ -3,10 +3,13 @@ package com.esparta.guru_02.bootstrap;
 import com.esparta.guru_02.entities.Customer;
 import com.esparta.guru_02.entities.Beer;
 
+import com.esparta.guru_02.mappers.BeerMapper;
+import com.esparta.guru_02.model.BeerCSVRecord;
 import com.esparta.guru_02.model.BeerStyle;
 import com.esparta.guru_02.repositories.CustomerRepository;
 import com.esparta.guru_02.repositories.BeerRepository;
 
+import com.esparta.guru_02.services.BeerCSVService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -31,6 +34,8 @@ public class BootstrapData implements CommandLineRunner {
 
     private final CustomerRepository customerRepository;
     private final BeerRepository beerRepository;
+    private final BeerCSVService beerCSVService;
+    private final BeerMapper beerMapper;
 
     @Override
     public void run(String... args) {
@@ -62,6 +67,14 @@ public class BootstrapData implements CommandLineRunner {
 
     }
     private void loadCSVBeerData(){
+        log.debug("Loading Beer CSV Data");
+        String beerFileName = "beers.csv";
+        String pathToFile = "src/main/java/com/esparta/guru_02/model/csv/" + beerFileName;
+        List<BeerCSVRecord> beerCSVRecords = beerCSVService.beerCSVRecords(pathToFile);
+
+        List<Beer> beers = beerMapper.csvToBeerList(beerCSVRecords);
+        List<Beer> savedBeers = beerRepository.saveAll(beers);
+        log.debug("Saved {} beers from CSV", savedBeers.size());
 
     }
 
@@ -84,7 +97,5 @@ public class BootstrapData implements CommandLineRunner {
         ));
     }
 
-    private void loadCsvData(){
 
-    }
 }

@@ -2,6 +2,7 @@ package com.esparta.guru_02.services;
 
 import com.esparta.guru_02.model.BeerCSVRecord;
 import com.opencsv.bean.CsvToBeanBuilder;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,6 +15,7 @@ import java.util.List;
  * Project Name: guru-02
  * Description: beExcellent
  */
+@Service
 public class BeerCSVServiceImpl implements BeerCSVService {
     @Override
     public List<BeerCSVRecord> beerCSVRecords(File csvFile)  {
@@ -31,11 +33,11 @@ public class BeerCSVServiceImpl implements BeerCSVService {
 
     @Override
     public List<BeerCSVRecord> beerCSVRecords(String path) {
-        // if path null throws illegal argument exception
+        // Path must not be null
         if (path == null) {
             throw new IllegalArgumentException("Path must not be null");
         }
-        // path must not be empty
+        // Path must not be empty
         if (path.isEmpty()){
             throw new IllegalArgumentException("Path must not be empty");
         }
