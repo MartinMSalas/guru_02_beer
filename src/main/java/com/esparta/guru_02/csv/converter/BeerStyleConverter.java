@@ -2,6 +2,7 @@ package com.esparta.guru_02.csv.converter;
 
 import com.esparta.guru_02.model.BeerStyle;
 import com.opencsv.bean.AbstractBeanField;
+import lombok.extern.slf4j.Slf4j;
 
 /*
  * Author: M
@@ -9,19 +10,22 @@ import com.opencsv.bean.AbstractBeanField;
  * Project Name: guru-02
  * Description: beExcellent
  */
+@Slf4j
 public class BeerStyleConverter
         extends AbstractBeanField<BeerStyle, String> {
 
     @Override
-    protected BeerStyle convert(String value) {
+    public BeerStyle convert(String value) {
         if (value == null || value.isBlank() || value.equalsIgnoreCase("NA")) {
-            return BeerStyle.IPA;
+            log.debug("CSV style is null or blank; returning UNKNOWN");
+            return BeerStyle.UNKNOWN;
         }
         try {
             return BeerStyle.fromCsv(value);
 
         } catch (IllegalArgumentException ex) {
-            return null;
+            log.warn("Unknown beer style: '{}'", value);
+            return BeerStyle.UNKNOWN;
         }
     }
 }

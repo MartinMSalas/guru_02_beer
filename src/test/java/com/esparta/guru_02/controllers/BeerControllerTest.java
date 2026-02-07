@@ -61,7 +61,7 @@ class BeerControllerTest {
         beerDTO = BeerDTO.builder()
                 .beerId(UUID.randomUUID())
                 .beerName("Galaxy Cat")
-                .beerStyle(BeerStyle.PALE_ALE)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("123456789012")
                 .price(new BigDecimal("12.99"))
                 .quantityOnHand(1223)
@@ -98,7 +98,7 @@ class BeerControllerTest {
 
         // GIVEN an invalid beer payload (missing beerName)
         BeerDTO invalidBeerDTO = BeerDTO.builder()
-                .beerStyle(BeerStyle.PALE_ALE)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("123456789012")
                 .price(new BigDecimal("12.99"))
                 .quantityOnHand(1223)

@@ -65,10 +65,11 @@ class BeerRepositoryTest {
 
         Beer beer = Beer.builder()
                 .beerName("Valid Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("123456789012")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         Beer saved = beerRepository.saveAndFlush(beer);
@@ -87,10 +88,11 @@ class BeerRepositoryTest {
     void givenBeerWithoutName_whenSave_thenThrowDataIntegrityViolation() {
 
         Beer beer = Beer.builder()
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("NO_NAME_UPC")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         assertThatThrownBy(() -> beerRepository.saveAndFlush(beer))
@@ -105,6 +107,7 @@ class BeerRepositoryTest {
                 .upc("NO_STYLE_UPC")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         assertThatThrownBy(() -> beerRepository.saveAndFlush(beer))
@@ -116,9 +119,10 @@ class BeerRepositoryTest {
 
         Beer beer = Beer.builder()
                 .beerName("No UPC Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         assertThatThrownBy(() -> beerRepository.saveAndFlush(beer))
@@ -130,9 +134,10 @@ class BeerRepositoryTest {
 
         Beer beer = Beer.builder()
                 .beerName("No Quantity Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("NO_QTY_UPC")
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         assertThatThrownBy(() -> beerRepository.saveAndFlush(beer))
@@ -144,9 +149,10 @@ class BeerRepositoryTest {
 
         Beer beer = Beer.builder()
                 .beerName("No Price Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("NO_PRICE_UPC")
                 .quantityOnHand(10)
+                .externalBeerId(999999)
                 .build();
 
         assertThatThrownBy(() -> beerRepository.saveAndFlush(beer))
@@ -162,18 +168,20 @@ class BeerRepositoryTest {
 
         Beer first = Beer.builder()
                 .beerName("Beer One")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("DUPLICATE_UPC")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         Beer second = Beer.builder()
                 .beerName("Beer Two")
-                .beerStyle(BeerStyle.LAGER)
+                .beerStyle(BeerStyle.ALTBIER)
                 .upc("DUPLICATE_UPC")
                 .quantityOnHand(5)
                 .price(new BigDecimal("5.99"))
+                .externalBeerId(999998)
                 .build();
 
         beerRepository.saveAndFlush(first);
@@ -190,10 +198,11 @@ class BeerRepositoryTest {
         // 1. Initial setup: Save a Beer with Version 0
         Beer beer = Beer.builder()
                 .beerName("Concurrent Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("LOCK_TEST_UPC")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         Beer savedBeer = beerRepository.saveAndFlush(beer);
@@ -209,6 +218,7 @@ class BeerRepositoryTest {
                 .upc(beerInstance1.getUpc())
                 .quantityOnHand(beerInstance1.getQuantityOnHand())
                 .price(beerInstance1.getPrice())
+                .externalBeerId(beerInstance1.getExternalBeerId())
                 .createdDate(beerInstance1.getCreatedDate())
                 .lastModifiedDate(beerInstance1.getLastModifiedDate())
                 .version(beerInstance1.getVersion())
@@ -231,10 +241,11 @@ class BeerRepositoryTest {
         // 1. Initial setup
         Beer beer = Beer.builder()
                 .beerName("Concurrent Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("LOCK_TEST_UPC")
                 .quantityOnHand(10)
                 .price(new BigDecimal("9.99"))
+                .externalBeerId(999999)
                 .build();
 
         Beer savedBeer = beerRepository.saveAndFlush(beer);

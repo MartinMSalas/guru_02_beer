@@ -66,7 +66,7 @@ class BeerControllerComponentTest {
         // ===== GIVEN =====
         BeerDTO newBeer = BeerDTO.builder()
                 .beerName("New Beer")
-                .beerStyle(BeerStyle.IPA)
+                .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("999999999999")
                 .price(new BigDecimal("9.99"))
                 .quantityOnHand(100)

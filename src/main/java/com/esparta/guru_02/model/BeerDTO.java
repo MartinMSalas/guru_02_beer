@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Objects;
 import java.util.UUID;
 
 /*
@@ -25,6 +26,12 @@ public class BeerDTO {
        ========================= */
 
     private UUID beerId;
+    /**
+     * External identifier (CSV, supplier, legacy system, etc.)
+     * Optional – may be null.
+     */
+    private Integer externalBeerId;
+
 
     /* =========================
        DOMAIN DATA
@@ -61,4 +68,16 @@ public class BeerDTO {
        ========================= */
 
     private Long version;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        BeerDTO beerDTO = (BeerDTO) o;
+        return Objects.equals(beerId, beerDTO.beerId) && Objects.equals(externalBeerId, beerDTO.externalBeerId) && Objects.equals(beerName, beerDTO.beerName) && beerStyle == beerDTO.beerStyle && Objects.equals(upc, beerDTO.upc) && Objects.equals(quantityOnHand, beerDTO.quantityOnHand) && Objects.equals(price, beerDTO.price) && Objects.equals(version, beerDTO.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(beerId, externalBeerId, beerName, beerStyle, upc, quantityOnHand, price, version);
+    }
 }

@@ -80,11 +80,11 @@ public class BootstrapData implements CommandLineRunner {
 
     private void loadBeerData() {
                 beerRepository.saveAll(List.of(
-                Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.PALE_ALE).upc("123456789012")
+                Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.CALIFORNIA_COMMON_STEAM_BEER).upc("123456789012")
                         .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
-                Beer.builder().beerName("Crank").beerStyle(BeerStyle.PALE_ALE).upc("123456789013")
+                Beer.builder().beerName("Crank").beerStyle(BeerStyle.SCOTCH_ALE).upc("123456789013")
                         .price(new BigDecimal("11.99")).quantityOnHand(1223).build(),
-                Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.IPA).upc("123456789014")
+                Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.AMERICAN_BARLEYWINE).upc("123456789014")
                         .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
         ));
     }

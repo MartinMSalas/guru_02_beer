@@ -1,5 +1,6 @@
 package com.esparta.guru_02.mappers;
 
+import com.esparta.guru_02.csv.converter.BeerStyleConverter;
 import com.esparta.guru_02.entities.Beer;
 import com.esparta.guru_02.model.BeerCSVRecord;
 import com.esparta.guru_02.model.BeerDTO;
@@ -76,14 +77,6 @@ public interface BeerMapper {
     /* =========================================================
        HELPERS
        ========================================================= */
-
-    default BeerStyle mapStyle(String style) {
-        if (style == null) {
-            return BeerStyle.IPA; // fallback
-        }
-        return BeerStyle.valueOf(style.toUpperCase().replace(" ", "_"));
-    }
-
     default String generateUpc(BeerCSVRecord record) {
         // CSV does not provide UPC → generate deterministic one
         return "CSV-" + record.getBeerId();
