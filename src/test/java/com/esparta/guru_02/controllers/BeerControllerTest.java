@@ -60,7 +60,7 @@ class BeerControllerTest {
         // GIVEN a valid BeerDTO used across tests
         beerDTO = BeerDTO.builder()
                 .beerId(UUID.randomUUID())
-                .beerName("Galaxy Cat")
+                .beerName("IPA")
                 .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("123456789012")
                 .price(new BigDecimal("12.99"))
@@ -70,7 +70,7 @@ class BeerControllerTest {
         // GIVEN a list with a single beer
         beerDTOList = List.of(beerDTO);
     }
-
+    // POST METHODS
     @Test
     void givenValidBeerPayload_whenPostBeer_thenReturn201CreatedAndBeer() throws Exception {
 
@@ -114,6 +114,7 @@ class BeerControllerTest {
                 // THEN the response status is 400 BAD REQUEST
                 .andExpect(status().isBadRequest());
     }
+    // GET METHODS
     @Test
     void givenValidBeerId_whenGetBeerById_thenReturn200OkAndBeerJson() throws Exception {
 
@@ -134,7 +135,7 @@ class BeerControllerTest {
 
                 // AND the returned beer matches the expected values
                 .andExpect(jsonPath("$.beerId", is(beerId.toString())))
-                .andExpect(jsonPath("$.beerName", is("Galaxy Cat")));
+                .andExpect(jsonPath("$.beerName", is("IPA")));
     }
 
     @Test
@@ -170,6 +171,41 @@ class BeerControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    void givenValidBeerName_whenGetBeersByName_thenReturn200OkAndBeerJson() throws Exception {
+
+        // GIVEN a valid beer name
+        String beerName = beerDTO.getBeerName();
+
+        // AND the service returns the beer
+
+
+        given(beerService.getBeersByName(eq(beerName)))
+                .willReturn(beerDTOList);
+
+        // WHEN the GET-by-name endpoint is called
+        /*
+        mockMvc.perform(get(BEER_PATH + "/name/" + beerName))
+        */
+        mockMvc.perform(get(BEER_PATH + "/search")
+                .param("beerName", beerName))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()",is(1)))
+        // THEN the response status is 200 OK
+                .andExpect(status().isOk())
+
+                // AND the response is JSON
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+
+                // AND the returned beer matches the expected values
+                /*
+                .andExpect(jsonPath("$.beerId", is(beerDTO.getBeerId().toString())))
+                .andExpect(jsonPath("$.beerName", is(beerName)));
+
+                 */
+    }
+
+    // PUT METHODS
     @Test
     void givenValidUpdatedBeerPayload_whenUpdateBeer_thenReturn200OkAndBeer() throws Exception {
 

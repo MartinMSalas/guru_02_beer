@@ -4,13 +4,13 @@ import com.esparta.guru_02.entities.Beer;
 import com.esparta.guru_02.exceptions.NotFoundException;
 import com.esparta.guru_02.mappers.BeerMapper;
 import com.esparta.guru_02.model.BeerDTO;
-import com.esparta.guru_02.model.BeerStyle;
+
 import com.esparta.guru_02.repositories.BeerRepository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+
 import java.util.*;
 
 /*
@@ -33,7 +33,7 @@ public class BeerServiceImpl implements BeerService {
 
 
     }
-
+    // Post Create method
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
         log.debug("Save New BeerDTO - in Service. BeerDTO: {}", beerDTO);
@@ -44,16 +44,7 @@ public class BeerServiceImpl implements BeerService {
 
         return beerMapper.beerToBeerDTO(savedBeer);
     }
-
-    @Override
-    public List<BeerDTO> getAllBeers(){
-        // return beerMap.values().stream().toList();
-        log.debug("List Beers - in Service");
-        List<Beer> beerListSaved = beerRepository.findAll();
-
-        return beerMapper.beerListToBeerDTOList(beerListSaved);
-    }
-
+    // Get Read methods
     @Override
     public BeerDTO getBeerById(UUID beerId) {
         log.debug("Get BeerDTO by Id - in Service. Id: {}", beerId);
@@ -72,7 +63,27 @@ public class BeerServiceImpl implements BeerService {
         return beerMapper.beerToBeerDTO(beer);
     }
 
+    @Override
+    public List<BeerDTO> getAllBeers(){
+        // return beerMap.values().stream().toList();
+        log.debug("List Beers - in Service");
+        List<Beer> beerListSaved = beerRepository.findAll();
 
+        return beerMapper.beerListToBeerDTOList(beerListSaved);
+    }
+
+    @Override
+    public List<BeerDTO> getBeersByName(String beerName) {
+        log.debug("Get Beers by Name - in Service. Name: {}", beerName);
+        if (beerName == null || beerName.isBlank()) {
+            throw new IllegalArgumentException("Beer name must be provided");
+        }
+        List<Beer> beers = beerRepository.findByBeerNameContainingIgnoreCase(beerName);
+        log.debug("Found {} beers with name '{}'", beers.size(), beerName);
+        return beerMapper.beerListToBeerDTOList(beers);
+    }
+
+    //  Put Update methods
     @Override
     public BeerDTO updateBeer(UUID beerId, BeerDTO beerDTO) {
         log.debug("Update BeerDTO - in Service. Id: {}, BeerDTO: {}", beerId, beerDTO);
@@ -102,7 +113,7 @@ public class BeerServiceImpl implements BeerService {
 
 
 
-
+    //  Patch Update method
     @Override
     public BeerDTO patchBeer(UUID beerId, BeerDTO beerDTO) {
         log.debug("Patch BeerDTO - in Service. Id: {}, BeerDTO: {}", beerId, beerDTO);

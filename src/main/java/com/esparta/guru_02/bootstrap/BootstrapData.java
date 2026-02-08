@@ -10,6 +10,7 @@ import com.esparta.guru_02.repositories.CustomerRepository;
 import com.esparta.guru_02.repositories.BeerRepository;
 
 import com.esparta.guru_02.services.BeerCSVService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -37,6 +38,7 @@ public class BootstrapData implements CommandLineRunner {
     private final BeerCSVService beerCSVService;
     private final BeerMapper beerMapper;
 
+    @Transactional
     @Override
     public void run(String... args) {
         log.debug("In bootstrap; ");
@@ -78,16 +80,7 @@ public class BootstrapData implements CommandLineRunner {
 
     }
 
-    private void loadBeerData() {
-                beerRepository.saveAll(List.of(
-                Beer.builder().beerName("Galaxy Cat").beerStyle(BeerStyle.CALIFORNIA_COMMON_STEAM_BEER).upc("123456789012")
-                        .price(new BigDecimal("12.99")).quantityOnHand(1223).build(),
-                Beer.builder().beerName("Crank").beerStyle(BeerStyle.SCOTCH_ALE).upc("123456789013")
-                        .price(new BigDecimal("11.99")).quantityOnHand(1223).build(),
-                Beer.builder().beerName("Sunshine City").beerStyle(BeerStyle.AMERICAN_BARLEYWINE).upc("123456789014")
-                        .price(new BigDecimal("13.99")).quantityOnHand(1223).build()
-        ));
-    }
+
 
     private void loadCustomerData() {
         customerRepository.saveAll(List.of(

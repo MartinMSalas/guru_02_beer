@@ -35,6 +35,16 @@ public class BeerController {
     private final BeerService beerService;
 
 
+    /**
+        * Creates a new beer.
+        *
+        * Parameters:
+        * - beerDTO: Beer data to create (must include all required fields)
+        *
+        * Contract:
+        * - 201 Created with created BeerDTO if creation is successful
+        * - 400 Bad Request if input data is invalid
+    */
     @PostMapping()
     public ResponseEntity<BeerDTO> createNewBeer(@Validated @RequestBody BeerDTO beerDTO){
         log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
@@ -47,6 +57,16 @@ public class BeerController {
         return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
     }
 
+    /**
+        * Returns a beer by ID.
+        *
+        * Parameters:
+        * - beerId: ID of the beer to retrieve
+        *
+        * Contract:
+        * - 200 OK with BeerDTO if found
+        * - 404 Not Found if no beer with the given ID exists
+    */
     @GetMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> getBeerById(@PathVariable UUID beerId){
         log.debug("In BeerController.getBeer() with id: {}", beerId);
@@ -58,12 +78,16 @@ public class BeerController {
 
 
     /**
-     * Returns all beers.
-     *
-     * Contract:
-     * - 200 OK with list (possibly empty)
-     * - Never returns null
-     */
+        * Returns all beers.
+        *
+        *  Parameters:
+        *  - page (optional, default=0): Page number for pagination (0-based)
+        *  - size (optional, default=25): Number of items per page (max 100)
+        *
+        * Contract:
+        * - 200 OK with list (possibly empty)
+        * - Never returns null
+    */
     @GetMapping()
     public ResponseEntity<List<BeerDTO>> getAllBeers(
             @RequestParam(defaultValue = "0") Integer page,
@@ -85,6 +109,47 @@ public class BeerController {
         headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));
         return new ResponseEntity<>(beers, headers, HttpStatus.OK);
     }
+
+    /**
+        * Returns beers matching the given name.
+        *
+        * Parameters:
+        * - beerName: Name to search for (case-insensitive, partial match)
+        *
+        * Contract:
+        * - 200 OK with list of matching beers (possibly empty)
+        * - Never returns null
+    */
+    @GetMapping("/search")
+    public ResponseEntity<List<BeerDTO>> getBeersByName(@RequestParam String beerName,
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size
+
+    ) {
+        log.debug("In BeerController.getBeersByName() with name: {}", beerName);
+        if ((page < 0) || ( size <= 0) || size > 100) {
+            throw new BadRequestException("Invalid pagination parameters");
+        }
+        // For now, ignoring pagination parameters
+        List<BeerDTO> beers = beerService.getBeersByName(beerName);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setCacheControl(CacheControl.noCache().mustRevalidate());
+        headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));
+        return new ResponseEntity<>(beers, headers, HttpStatus.OK);
+    }
+
+    /**
+        * Updates an existing beer by ID.
+        *
+        * Parameters:
+        * - beerId: ID of the beer to update
+        * - beerDTO: Updated beer data (must include all required fields)
+        *
+        * Contract:
+        * - 200 OK with updated BeerDTO if update is successful
+        * - 400 Bad Request if input data is invalid
+        * - 404 Not Found if no beer with the given ID exists
+    */
     @PutMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> updateBeer(@PathVariable UUID beerId, @RequestBody BeerDTO beerDTO){
         log.debug("In BeerController.updateBeer() with id: {}", beerId);
@@ -93,16 +158,20 @@ public class BeerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location","/api/v1/beer/" + beerDTOUpdated.getBeerId().toString());
         return new ResponseEntity<>(beerDTOUpdated, headers, HttpStatus.OK);
-
-    }
-    @DeleteMapping(BEER_PATH_ID)
-    public ResponseEntity<BeerDTO> deleteBeer(@PathVariable UUID beerId){
-        log.debug("In BeerController.deleteBeer() with id: {}", beerId);
-        BeerDTO deletedBeerDTO = beerService.deleteById(beerId);
-
-        return new ResponseEntity<>(deletedBeerDTO, HttpStatus.OK);
     }
 
+    /**
+     * Partially updates a beer by ID.
+     *
+     * Parameters:
+     * - beerId: ID of the beer to update
+     * - beerDTO: Beer data to update (only non-null fields will be updated)
+     *
+     * Contract:
+     * - 200 OK with updated BeerDTO if update is successful
+     * - 400 Bad Request if input data is invalid
+     * - 404 Not Found if no beer with the given ID exists
+     */
     @PatchMapping(BEER_PATH_ID)
     public ResponseEntity<BeerDTO> patchBeer(@PathVariable UUID beerId, @RequestBody BeerDTO beerDTO) {
         log.debug("In BeerController.patchBeer() with id: {}", beerId);
@@ -110,6 +179,24 @@ public class BeerController {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", "/api/v1/beer/" + patchedBeerDTO.getBeerId().toString());
         return new ResponseEntity<>(patchedBeerDTO, headers, HttpStatus.OK);
+    }
+
+    /**
+        * Deletes a beer by ID.
+        *
+        * Parameters:
+        * - beerId: ID of the beer to delete
+        *
+        * Contract:
+        * - 200 OK with deleted BeerDTO if deletion is successful
+        * - 404 Not Found if no beer with the given ID exists
+    */
+    @DeleteMapping(BEER_PATH_ID)
+    public ResponseEntity<BeerDTO> deleteBeer(@PathVariable UUID beerId){
+        log.debug("In BeerController.deleteBeer() with id: {}", beerId);
+        BeerDTO deletedBeerDTO = beerService.deleteById(beerId);
+
+        return new ResponseEntity<>(deletedBeerDTO, HttpStatus.OK);
     }
 
 

@@ -56,7 +56,7 @@ public class Beer {
     // BUSINESS KEY (from CSV) - external stable identifier
     // Maps from BeerCSVRecord column "id"
     // =========================================================
-    @Column(name = "external_beer_id", nullable = false, updatable = false)
+    @Column(name = "external_beer_id")
     private Integer externalBeerId;
 
     // =========================================================
@@ -69,7 +69,7 @@ public class Beer {
     @Column(name = "beer_style", nullable = false, length = 50)
     private BeerStyle beerStyle;
 
-    @Column(name = "upc", nullable = false, length = 50)
+    @Column(name = "upc",  length = 50)
     private String upc;
 
     @Column(name = "quantity_on_hand", nullable = false)

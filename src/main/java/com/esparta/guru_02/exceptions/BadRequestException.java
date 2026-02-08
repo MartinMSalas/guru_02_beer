@@ -6,7 +6,7 @@ package com.esparta.guru_02.exceptions;
  * Project Name: guru-02
  * Description: beExcellent
  */
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends IllegalArgumentException  {
 
 
     /**
@@ -46,3 +46,4 @@ public class BadRequestException extends RuntimeException {
     public BadRequestException(String message, Throwable throwable) {
         super(message, throwable);
     }}
+

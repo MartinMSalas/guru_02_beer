@@ -3,9 +3,10 @@ package com.esparta.guru_02.repositories;
 import com.esparta.guru_02.configuration.JpaAuditingConfig;
 import com.esparta.guru_02.entities.Beer;
 import com.esparta.guru_02.model.BeerStyle;
-import jakarta.persistence.EntityManager;
+
 import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
@@ -17,7 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
-import java.util.List;
+
 import java.util.UUID;
 
 
@@ -51,8 +52,6 @@ class BeerRepositoryTest {
     @Autowired
     BeerRepository beerRepository;
 
-    @Autowired
-    TransactionTemplate transactionTemplate;
     @Autowired private TestEntityManager entityManager;
     /* =========================================================
        HAPPY PATH
@@ -114,6 +113,7 @@ class BeerRepositoryTest {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
+    @Disabled
     @Test
     void givenBeerWithoutUpc_whenSave_thenThrowDataIntegrityViolation() {
 

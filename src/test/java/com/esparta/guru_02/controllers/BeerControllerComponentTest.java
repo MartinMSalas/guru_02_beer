@@ -58,6 +58,24 @@ class BeerControllerComponentTest {
        Tests
        ========================================================== */
 
+    /**
+     * Post Methods
+     */
+    /*
+     * Test the "create new beer" happy path.
+     * Payload is valid, so we expect the beer to be created successfully.
+     * Parameters:
+     * - beerName: "New Beer"
+     * - beerStyle: AMERICAN_BARLEYWINE
+     * - upc: "999999999999"
+     * - price: 9.99
+     * - quantityOnHand: 100
+     *
+     * Verifies:
+     * - 201 Created status
+     * - Location header is present
+     * - Response body contains the created Beer with an ID
+     */
     @Transactional
     @Rollback
     @Test
@@ -86,6 +104,15 @@ class BeerControllerComponentTest {
         assertThat(body.getBeerName()).isEqualTo("New Beer");
     }
 
+    /**
+     * Test the "get beer by ID" happy path.
+     * A beer with the given ID exists, so we expect to retrieve it successfully.
+     * Parameters:
+     * - beerId: ID of an existing beer
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains the expected BeerDTO with the correct ID
+     */
     @Test
     void givenValidBeerId_whenGetBeerById_thenReturn200OkAndBeer() {
 
@@ -103,6 +130,14 @@ class BeerControllerComponentTest {
                 .isEqualTo(existing.getBeerId());
     }
 
+    /**
+     * Test the "get beer by ID" error path.
+     * No beer with the given ID exists, so we expect a NotFoundException to be thrown.
+     * Parameters:
+     * - beerId: Random UUID that does not exist in the database
+     * Verifies:
+     * - NotFoundException is thrown
+     */
     @Test
     void givenNonExistingBeerId_whenGetBeerById_thenThrowNotFoundException() {
 
@@ -118,6 +153,16 @@ class BeerControllerComponentTest {
         );
     }
 
+    /**
+     * Test the "list beers" happy path.
+     * Beers exist in the database, so we expect to retrieve a non-empty list.
+     * Parameters:
+     * - page: 0
+     * - size: 25
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains a non-empty list of BeerDTOs
+     */
     @Test
     void givenBeersExist_whenListBeers_thenReturn200AndNonEmptyList() {
 
@@ -128,8 +173,44 @@ class BeerControllerComponentTest {
         // ===== THEN =====
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull().isNotEmpty();
+
     }
 
+    /**
+     * Test the "list beers by name" happy path.
+     * Beers with the given name exist in the database, so we expect to retrieve a non-empty list.
+     * Parameters:
+     * - beerName: "IPA"
+     * - page: 0
+     * - size: 25
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains a non-empty list of BeerDTOs
+     */
+    @Test
+    void givenBeersExist_whenListBeersByName_thenReturn200AndNonEmptyList() {
+
+        // ===== WHEN =====
+        ResponseEntity<List<BeerDTO>> response =
+                beerController.getBeersByName("IPA", 0, 25);
+
+        // ===== THEN =====
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull().isNotEmpty();
+
+    }
+
+
+    /**
+     * Test the "list beers" edge case.
+     * No beers exist in the database, so we expect to retrieve an empty list.
+     * Parameters:
+     * - page: 0
+     * - size: 25
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains an empty list (not null)
+     */
     @Transactional
     @Rollback
     @Test
@@ -147,6 +228,16 @@ class BeerControllerComponentTest {
         assertThat(response.getBody()).isNotNull().isEmpty();
     }
 
+    /**
+     * Test the "update beer" happy path.
+     * A beer with the given ID exists, and the payload is valid, so we expect the beer to be updated successfully.
+     * Parameters:
+     * - beerId: ID of an existing beer
+     * - payload: BeerDTO with updated fields (e.g., new beerName)
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains the updated BeerDTO with the changes applied
+     */
     @Transactional
     @Rollback
     @Test
@@ -173,6 +264,15 @@ class BeerControllerComponentTest {
         assertThat(response.getBody().getBeerName()).isEqualTo("Updated Beer");
     }
 
+    /**
+     * Test the "update beer" error path.
+     * No beer with the given ID exists, so we expect a NotFoundException to be thrown.
+     * Parameters:
+     * - beerId: Random UUID that does not exist in the database
+     * - payload: BeerDTO with some fields (e.g., beerName)
+     * Verifies:
+     * - NotFoundException is thrown
+     */
     @Test
     void givenNonExistingBeerId_whenUpdateBeer_thenThrowNotFoundException() {
 
@@ -188,6 +288,16 @@ class BeerControllerComponentTest {
         );
     }
 
+    /**
+     * Test the "patch beer" happy path.
+     * A beer with the given ID exists, and the payload contains valid fields to update, so we expect the beer to be patched successfully.
+     * Parameters:
+     * - beerId: ID of an existing beer
+     * - payload: BeerDTO with only the fields to update (e.g., new beerName, other fields null)
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains the patched BeerDTO with only the specified changes applied
+     */
     @Transactional
     @Rollback
     @Test
@@ -210,6 +320,43 @@ class BeerControllerComponentTest {
         assertThat(response.getBody().getBeerName()).isEqualTo("Patched Beer");
     }
 
+    /**
+     * Test the "patch beer" error path.
+     * No beer with the given ID exists, so we expect a NotFoundException to be thrown.
+     * Parameters:
+     * - beerId: Random UUID that does not exist in the database
+     * - payload: BeerDTO with some fields to patch (e.g., beerName)
+     * Verifies:
+     * - NotFoundException is thrown
+     */
+    @Transactional
+    @Rollback
+    @Test
+    void givenNonExistingBeerId_whenPatchBeer_thenThrowNotFoundException() {
+
+        UUID invalidId = UUID.randomUUID();
+        assertThat(beerRepository.existsById(invalidId)).isFalse();
+
+        BeerDTO patchPayload = BeerDTO.builder()
+                .beerName("Does Not Matter")
+                .build();
+
+        assertThrows(NotFoundException.class, () ->
+                beerController.patchBeer(invalidId, patchPayload)
+        );
+    }
+
+
+    /**
+     * Test the "delete beer" happy path.
+     * A beer with the given ID exists, so we expect it to be deleted successfully.
+     * Parameters:
+     * - beerId: ID of an existing beer
+     * Verifies:
+     * - 200 OK status
+     * - Response body contains the deleted BeerDTO
+     * - Beer is actually removed from the database (sanity check)
+     */
     @Transactional
     @Rollback
     @Test
@@ -228,6 +375,14 @@ class BeerControllerComponentTest {
         assertThat(beerRepository.existsById(beerId)).isFalse();
     }
 
+    /**
+     * Test the "delete beer" error path.
+     * No beer with the given ID exists, so we expect a NotFoundException to be thrown.
+     * Parameters:
+     * - beerId: Random UUID that does not exist in the database
+     * Verifies:
+     * - NotFoundException is thrown
+     */
     @Test
     void givenNonExistingBeerId_whenDeleteBeer_thenThrowNotFoundException() {
 
@@ -239,6 +394,15 @@ class BeerControllerComponentTest {
         );
     }
 
+    /**
+     * Test the "list beers" error path.
+     * Invalid pagination parameters are provided, so we expect a BadRequestException to be thrown.
+     * Parameters:
+     * - page: 0 (valid)
+     * - size: 500 (invalid, exceeds maximum allowed)
+     * Verifies:
+     * - BadRequestException is thrown
+     */
     @Test
     void givenInvalidPagination_whenListBeers_thenThrowBadRequestException() {
 
