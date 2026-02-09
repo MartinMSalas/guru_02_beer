@@ -142,10 +142,31 @@ class BeerControllerTest {
     void givenBeersExist_whenGetBeers_thenReturn200OkAndSingleBeer() throws Exception {
 
         // GIVEN a list of beers returned by the service
-        given(beerService.getAllBeers()).willReturn(beerDTOList);
+        given(beerService.getAllBeers(, , 0, 25)).willReturn(beerDTOList);
 
         // WHEN the GET collection endpoint is called
         mockMvc.perform(get( BEER_PATH))
+
+                // THEN the response status is 200 OK
+                .andExpect(status().isOk())
+
+                // AND the response is JSON
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+
+                // AND exactly one beer is returned
+                .andExpect(jsonPath("$.length()", is(1)));
+    }
+
+    @Test
+    void givenBeersExist_whenGetBeersByNameAndStyle_thenReturn200OkAndSingleBeer() throws Exception {
+
+        // GIVEN a list of beers returned by the service
+        given(beerService.getAllBeers(, , 0, 25)).willReturn(beerDTOList);
+
+        // WHEN the GET collection endpoint is called with name and style filters
+        mockMvc.perform(get( BEER_PATH )
+                        .param("beerName", "IPA")
+                        .param("beerStyle", "AMERICAN_BARLEYWINE"))
 
                 // THEN the response status is 200 OK
                 .andExpect(status().isOk())
@@ -170,40 +191,40 @@ class BeerControllerTest {
                 // THEN the response status is 404 NOT FOUND
                 .andExpect(status().isNotFound());
     }
-
-    @Test
-    void givenValidBeerName_whenGetBeersByName_thenReturn200OkAndBeerJson() throws Exception {
-
-        // GIVEN a valid beer name
-        String beerName = beerDTO.getBeerName();
-
-        // AND the service returns the beer
-
-
-        given(beerService.getBeersByName(eq(beerName)))
-                .willReturn(beerDTOList);
-
-        // WHEN the GET-by-name endpoint is called
-        /*
-        mockMvc.perform(get(BEER_PATH + "/name/" + beerName))
-        */
-        mockMvc.perform(get(BEER_PATH + "/search")
-                .param("beerName", beerName))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()",is(1)))
-        // THEN the response status is 200 OK
-                .andExpect(status().isOk())
-
-                // AND the response is JSON
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-
-                // AND the returned beer matches the expected values
-                /*
-                .andExpect(jsonPath("$.beerId", is(beerDTO.getBeerId().toString())))
-                .andExpect(jsonPath("$.beerName", is(beerName)));
-
-                 */
-    }
+//  Marked for deletion - GET by name endpoint was removed in favor of a more flexible search endpoint that supports multiple criteria
+//    @Test
+//    void givenValidBeerName_whenGetBeersByName_thenReturn200OkAndBeerJson() throws Exception {
+//
+//        // GIVEN a valid beer name
+//        String beerName = beerDTO.getBeerName();
+//
+//        // AND the service returns the beer
+//
+//
+//        given(beerService.getBeersByName(eq(beerName)))
+//                .willReturn(beerDTOList);
+//
+//        // WHEN the GET-by-name endpoint is called
+//        /*
+//        mockMvc.perform(get(BEER_PATH + "/name/" + beerName))
+//        */
+//        mockMvc.perform(get(BEER_PATH + "/search")
+//                .param("beerName", beerName))
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.size()",is(1)))
+//        // THEN the response status is 200 OK
+//                .andExpect(status().isOk())
+//
+//                // AND the response is JSON
+//                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+//
+//                // AND the returned beer matches the expected values
+//                /*
+//                .andExpect(jsonPath("$.beerId", is(beerDTO.getBeerId().toString())))
+//                .andExpect(jsonPath("$.beerName", is(beerName)));
+//
+//                 */
+//    }
 
     // PUT METHODS
     @Test

@@ -5,6 +5,7 @@ import com.esparta.guru_02.exceptions.NotFoundException;
 import com.esparta.guru_02.mappers.BeerMapper;
 import com.esparta.guru_02.model.BeerDTO;
 
+import com.esparta.guru_02.model.BeerStyle;
 import com.esparta.guru_02.repositories.BeerRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -64,9 +65,30 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> getAllBeers(){
+    public List<BeerDTO> getAllBeers(String beerName, String beerStyle, Integer page, Integer size){
         // return beerMap.values().stream().toList();
-        log.debug("List Beers - in Service");
+        log.debug("Get All Beers - in Service. Filters - Name: {}, Style: {}, Page: {}, Size: {}", beerName, beerStyle, page, size);
+        String name = (beerName == null || beerName.isBlank()) ? null : beerName.trim();
+        BeerStyle style = (beerStyle == null || beerStyle.isBlank())
+                ? null
+                : BeerStyle.valueOf(beerStyle);
+
+        Pageable pageable = PageRequest.of(
+                page == null || page < 0 ? 0 : page,
+                size == null || size <= 0 ? 25 : size
+        );
+
+        Specification<Beer> spec = Specification
+                .where(BeerSpecifications.hasNameLike(name))
+                .and(BeerSpecifications.hasStyle(style));
+
+        return beerRepository.findAll(spec, pageable)
+                .map(beerMapper::beerToBeerDTO)
+                .getContent();
+    }
+
+
+
         List<Beer> beerListSaved = beerRepository.findAll();
 
         return beerMapper.beerListToBeerDTOList(beerListSaved);

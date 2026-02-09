@@ -18,4 +18,6 @@ public interface BeerRepository extends JpaRepository<Beer, UUID> {
     Optional<Beer> findFirstByOrderByCreatedDateAsc();
 
     List<Beer> findByBeerNameContainingIgnoreCase(String beerName);
+
+
 }

@@ -81,8 +81,11 @@ public class BeerController {
         * Returns all beers.
         *
         *  Parameters:
+        *  - beerName (optional): Filter by beer name (case-insensitive, partial match)
+        *  - beerStyle (optional): Filter by beer style (case-insensitive, exact match)
         *  - page (optional, default=0): Page number for pagination (0-based)
         *  - size (optional, default=25): Number of items per page (max 100)
+        *
         *
         * Contract:
         * - 200 OK with list (possibly empty)
@@ -90,48 +93,22 @@ public class BeerController {
     */
     @GetMapping()
     public ResponseEntity<List<BeerDTO>> getAllBeers(
+            @RequestParam(required = false) String beerName,
+            @RequestParam(required = false) String beerStyle,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size
             // @RequestParam(required = false) Integer size
     ) {
 
-        log.debug("GET /api/v1/beers?page={}, size={}", page, size);
+        log.debug("In BeerController.getAllBeers() with filters - beerName: {}, beerStyle: {}, page: {}, size: {}", beerName, beerStyle, page, size);
 
         if ((page < 0) || ( size <= 0) || size > 100) {
             throw new BadRequestException("Invalid pagination parameters");
         }
 
         // For now, ignoring pagination parameters
-        List<BeerDTO> beers = beerService.getAllBeers();
+        List<BeerDTO> beers = beerService.getAllBeers( beerName, beerStyle , 0, 25);
         // Add X-Total-Count header if pagination is implemented in the future
-        HttpHeaders headers = new HttpHeaders();
-        headers.setCacheControl(CacheControl.noCache().mustRevalidate());
-        headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));
-        return new ResponseEntity<>(beers, headers, HttpStatus.OK);
-    }
-
-    /**
-        * Returns beers matching the given name.
-        *
-        * Parameters:
-        * - beerName: Name to search for (case-insensitive, partial match)
-        *
-        * Contract:
-        * - 200 OK with list of matching beers (possibly empty)
-        * - Never returns null
-    */
-    @GetMapping("/search")
-    public ResponseEntity<List<BeerDTO>> getBeersByName(@RequestParam String beerName,
-            @RequestParam(defaultValue = "0") Integer page,
-            @RequestParam(defaultValue = "25") Integer size
-
-    ) {
-        log.debug("In BeerController.getBeersByName() with name: {}", beerName);
-        if ((page < 0) || ( size <= 0) || size > 100) {
-            throw new BadRequestException("Invalid pagination parameters");
-        }
-        // For now, ignoring pagination parameters
-        List<BeerDTO> beers = beerService.getBeersByName(beerName);
         HttpHeaders headers = new HttpHeaders();
         headers.setCacheControl(CacheControl.noCache().mustRevalidate());
         headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));

@@ -44,7 +44,7 @@ class BeerControllerComponentTest {
 
     private BeerDTO anyExistingBeer() {
         ResponseEntity<List<BeerDTO>> response =
-                beerController.getAllBeers(0, 25);
+                beerController.getAllBeers(null,null,0, 25);
 
         assertThat(response.getBody())
                 .as("Expected at least one Beer to exist for this test")
@@ -168,7 +168,7 @@ class BeerControllerComponentTest {
 
         // ===== WHEN =====
         ResponseEntity<List<BeerDTO>> response =
-                beerController.getAllBeers(0, 25);
+                beerController.getAllBeers(null,null,0, 25);
 
         // ===== THEN =====
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -192,7 +192,7 @@ class BeerControllerComponentTest {
 
         // ===== WHEN =====
         ResponseEntity<List<BeerDTO>> response =
-                beerController.getBeersByName("IPA", 0, 25);
+                beerController.getAllBeers("IPA",null, 0, 25);
 
         // ===== THEN =====
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -221,7 +221,7 @@ class BeerControllerComponentTest {
 
         // ===== WHEN =====
         ResponseEntity<List<BeerDTO>> response =
-                beerController.getAllBeers(0, 25);
+                beerController.getAllBeers(null,null,0, 25);
 
         // ===== THEN =====
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -408,7 +408,7 @@ class BeerControllerComponentTest {
 
         // page OK, size invalid (>100)
         assertThrows(BadRequestException.class, () ->
-                beerController.getAllBeers(0, 500)
+                beerController.getAllBeers(null,null, 0, 500)
         );
     }
 }
