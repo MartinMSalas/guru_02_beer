@@ -44,6 +44,7 @@ public class BootstrapData implements CommandLineRunner {
         log.debug("In bootstrap; ");
         // ======== Beer ======== */
         long beerCount = beerRepository.count();
+        log.debug("Initial Beer Count: {}", beerCount);
         if(beerCount == 0) {
             log.debug("Loading Beer Data");
             //loadBeerData();
@@ -55,6 +56,7 @@ public class BootstrapData implements CommandLineRunner {
 
         /* ========= Customer ======== */
         long customerCount = customerRepository.count();
+        log.debug("Initial Customer Count: {}", customerCount);
         if(customerCount == 0) {
             log.debug("Loading Customer Data");
             loadCustomerData();

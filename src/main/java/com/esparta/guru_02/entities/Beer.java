@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 /*
@@ -77,6 +79,13 @@ public class Beer {
 
     @Column(name = "price", nullable = false, precision = 19, scale = 2)
     private BigDecimal price;
+
+    // =========================================================
+    // RELATIONSHIP
+    // =========================================================
+    @Builder.Default
+    @OneToMany(mappedBy = "beer")
+    private Set<BeerOrderLine> beerOrderLines =  new HashSet<>();
 
     // =========================================================
     // AUDITING

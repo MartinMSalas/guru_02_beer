@@ -42,8 +42,6 @@ public class BeerOrder {
     @Column(name = "beer_order_id", columnDefinition = "CHAR(36)", nullable = false, updatable = false)
     private UUID beerOrderId;
 
-
-
     @Column(name = "customer_ref")
     private String customerRef;
 
@@ -54,6 +52,9 @@ public class BeerOrder {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "beerOrder")
+    private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
 
     // =========================================================
     // AUDITING

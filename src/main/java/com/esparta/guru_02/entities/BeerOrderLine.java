@@ -51,6 +51,7 @@ public class BeerOrderLine {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "beer_order_id")
     private BeerOrder beerOrder;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "beer_id")
     private Beer beer;
