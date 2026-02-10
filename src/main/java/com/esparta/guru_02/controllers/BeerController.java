@@ -6,6 +6,7 @@ import com.esparta.guru_02.model.BeerDTO;
 import com.esparta.guru_02.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.CacheControl;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -92,7 +93,7 @@ public class BeerController {
         * - Never returns null
     */
     @GetMapping()
-    public ResponseEntity<List<BeerDTO>> getAllBeers(
+    public ResponseEntity<Page<BeerDTO>> getAllBeers(
             @RequestParam(required = false) String beerName,
             @RequestParam(required = false) String beerStyle,
             @RequestParam(defaultValue = "0") Integer page,
@@ -107,11 +108,11 @@ public class BeerController {
         }
 
         // For now, ignoring pagination parameters
-        List<BeerDTO> beers = beerService.getAllBeers( beerName, beerStyle , 0, 25);
+        Page<BeerDTO> beers = beerService.getAllBeers( beerName, beerStyle , 0, 25);
         // Add X-Total-Count header if pagination is implemented in the future
         HttpHeaders headers = new HttpHeaders();
         headers.setCacheControl(CacheControl.noCache().mustRevalidate());
-        headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.size()));
+        headers.add(HEADER_TOTAL_COUNT, String.valueOf(beers.getContent().size()));
         return new ResponseEntity<>(beers, headers, HttpStatus.OK);
     }
 

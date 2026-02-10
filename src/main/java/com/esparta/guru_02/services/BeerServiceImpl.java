@@ -8,7 +8,13 @@ import com.esparta.guru_02.model.BeerDTO;
 import com.esparta.guru_02.model.BeerStyle;
 import com.esparta.guru_02.repositories.BeerRepository;
 
+import com.esparta.guru_02.repositories.specifications.BeerSpecifications;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 
@@ -65,46 +71,32 @@ public class BeerServiceImpl implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> getAllBeers(String beerName, String beerStyle, Integer page, Integer size){
+    public Page<BeerDTO> getAllBeers(String beerName, String beerStyle, Integer page, Integer size){
         // return beerMap.values().stream().toList();
         log.debug("Get All Beers - in Service. Filters - Name: {}, Style: {}, Page: {}, Size: {}", beerName, beerStyle, page, size);
         String name = (beerName == null || beerName.isBlank()) ? null : beerName.trim();
+
         BeerStyle style = (beerStyle == null || beerStyle.isBlank())
                 ? null
                 : BeerStyle.valueOf(beerStyle);
+        // Default sorting by beerName ascending A-Z
+        Sort sort = Sort.by(Sort.Direction.ASC, "beerName");
 
         Pageable pageable = PageRequest.of(
                 page == null || page < 0 ? 0 : page,
-                size == null || size <= 0 ? 25 : size
+                size == null || size <= 0 ? 25 : size,
+                sort
         );
 
         Specification<Beer> spec = Specification
                 .where(BeerSpecifications.hasNameLike(name))
                 .and(BeerSpecifications.hasStyle(style));
+        log.debug("Constructed Specification: {}", spec);
 
         return beerRepository.findAll(spec, pageable)
-                .map(beerMapper::beerToBeerDTO)
-                .getContent();
+                .map(beerMapper::beerToBeerDTO);
+
     }
-
-
-
-        List<Beer> beerListSaved = beerRepository.findAll();
-
-        return beerMapper.beerListToBeerDTOList(beerListSaved);
-    }
-
-    @Override
-    public List<BeerDTO> getBeersByName(String beerName) {
-        log.debug("Get Beers by Name - in Service. Name: {}", beerName);
-        if (beerName == null || beerName.isBlank()) {
-            throw new IllegalArgumentException("Beer name must be provided");
-        }
-        List<Beer> beers = beerRepository.findByBeerNameContainingIgnoreCase(beerName);
-        log.debug("Found {} beers with name '{}'", beers.size(), beerName);
-        return beerMapper.beerListToBeerDTOList(beers);
-    }
-
     //  Put Update methods
     @Override
     public BeerDTO updateBeer(UUID beerId, BeerDTO beerDTO) {

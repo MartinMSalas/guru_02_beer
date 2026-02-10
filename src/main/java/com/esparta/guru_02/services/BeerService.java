@@ -2,6 +2,8 @@ package com.esparta.guru_02.services;
 
 
 import com.esparta.guru_02.model.BeerDTO;
+import org.springframework.data.domain.Page;
+
 
 import java.util.List;
 
@@ -17,9 +19,7 @@ public interface BeerService {
 
     BeerDTO getBeerById(UUID id);
 
-    List<BeerDTO>  getAllBeers(String beerName, String beerStyle, Integer page, Integer size);
-
-    List<BeerDTO> getBeersByName(String beerName);
+    Page<BeerDTO> getAllBeers(String beerName, String beerStyle, Integer page, Integer size);
 
     BeerDTO saveNewBeer(BeerDTO BeerDTO);
 

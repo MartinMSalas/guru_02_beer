@@ -10,6 +10,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
@@ -43,7 +44,7 @@ class BeerControllerComponentTest {
        ========================================================== */
 
     private BeerDTO anyExistingBeer() {
-        ResponseEntity<List<BeerDTO>> response =
+        ResponseEntity<Page<BeerDTO>> response =
                 beerController.getAllBeers(null,null,0, 25);
 
         assertThat(response.getBody())
@@ -51,7 +52,7 @@ class BeerControllerComponentTest {
                 .isNotNull()
                 .isNotEmpty();
 
-        return response.getBody().getFirst();
+        return response.getBody().getContent().getFirst();
     }
 
     /* ==========================================================
@@ -167,7 +168,7 @@ class BeerControllerComponentTest {
     void givenBeersExist_whenListBeers_thenReturn200AndNonEmptyList() {
 
         // ===== WHEN =====
-        ResponseEntity<List<BeerDTO>> response =
+        ResponseEntity<Page<BeerDTO>> response =
                 beerController.getAllBeers(null,null,0, 25);
 
         // ===== THEN =====
@@ -191,7 +192,7 @@ class BeerControllerComponentTest {
     void givenBeersExist_whenListBeersByName_thenReturn200AndNonEmptyList() {
 
         // ===== WHEN =====
-        ResponseEntity<List<BeerDTO>> response =
+        ResponseEntity<Page<BeerDTO>> response =
                 beerController.getAllBeers("IPA",null, 0, 25);
 
         // ===== THEN =====
@@ -220,7 +221,7 @@ class BeerControllerComponentTest {
         beerRepository.deleteAll();
 
         // ===== WHEN =====
-        ResponseEntity<List<BeerDTO>> response =
+        ResponseEntity<Page<BeerDTO>> response =
                 beerController.getAllBeers(null,null,0, 25);
 
         // ===== THEN =====
