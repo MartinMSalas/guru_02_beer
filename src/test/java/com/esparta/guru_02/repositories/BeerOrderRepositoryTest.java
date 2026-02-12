@@ -8,11 +8,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.math.BigDecimal;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@EnableJpaAuditing
 @DataJpaTest
 class BeerOrderRepositoryTest {
 
@@ -43,6 +45,7 @@ class BeerOrderRepositoryTest {
                 .beerStyle(BeerStyle.AMERICAN_BARLEYWINE)
                 .upc("123456789012")
                 .price(BigDecimal.valueOf(11.22))
+                .quantityOnHand(111)
                 .build();
 
         beer = beerRepository.save(beer);
@@ -58,6 +61,16 @@ class BeerOrderRepositoryTest {
     @Test
     void testBeerOrders(){
         System.out.println(beerOrderRepository.count());
+        System.out.println(beerRepository.count());
+        System.out.println(customerRepository.count());
+            assertEquals(1, beerOrderRepository.count());
+            assertEquals(1, beerRepository.count());
+            assertEquals(1, customerRepository.count());
+
+            BeerOrder retrievedOrder = beerOrderRepository.findById(beerOrder.getBeerOrderId()).orElse(null);
+            assertNotNull(retrievedOrder);
+            assertEquals("Test Order Ref", retrievedOrder.getCustomerRef());
+            assertEquals(customer.getCustomerId(), retrievedOrder.getCustomer().getCustomerId());
     }
 
 
