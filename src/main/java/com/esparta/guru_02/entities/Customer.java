@@ -47,9 +47,14 @@ public class Customer {
     @Column(length = 255)
     private String email;
 
+    // =========================
+    //     RELATIONSHIPS
+    // ==========================
+
     @Builder.Default
     @OneToMany(mappedBy = "customer")
     private Set<BeerOrder> beerOrders = new HashSet<>();
+
     /* =========================
        AUDITING
        ========================= */
@@ -68,4 +73,16 @@ public class Customer {
 
     @Version
     private Long version;
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+                "createdDate=" + createdDate +
+                ", customerId=" + customerId +
+                ", customerName='" + customerName + '\'' +
+                ", email='" + email + '\'' +
+                ", lastModifiedDate=" + lastModifiedDate +
+                ", version=" + version +
+                '}';
+    }
 }

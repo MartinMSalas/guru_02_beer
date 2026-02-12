@@ -104,4 +104,20 @@ public class Beer {
     @Version
     @Column(name = "version")
     private Long version;
+
+    @Override
+    public String toString() {
+        return "Beer{" +
+                "beerId=" + beerId +
+                ", beerName='" + beerName + '\'' +
+                ", beerStyle=" + beerStyle +
+                ", createdDate=" + createdDate +
+                ", externalBeerId=" + externalBeerId +
+                ", lastModifiedDate=" + lastModifiedDate +
+                ", price=" + price +
+                ", quantityOnHand=" + quantityOnHand +
+                ", upc='" + upc + '\'' +
+                ", version=" + version +
+                '}';
+    }
 }

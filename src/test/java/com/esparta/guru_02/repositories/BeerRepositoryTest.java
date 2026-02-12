@@ -13,6 +13,7 @@ import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jpa.test.autoconfigure.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -45,7 +46,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
  * - DTO validation
  * - HTTP / controllers
  */
-@Import(JpaAuditingConfig.class)
+@EnableJpaAuditing
 @DataJpaTest
 class BeerRepositoryTest {
 

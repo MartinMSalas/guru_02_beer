@@ -48,7 +48,7 @@ public class BeerOrder {
     // =========================================================
     // RELATIONSHIPS
     // =========================================================
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
@@ -73,5 +73,46 @@ public class BeerOrder {
     @Version
     @Column(name = "version")
     private Long version;
+
+    // =========================================================
+    // Helper Methods
+    // =========================================================
+    // ✅ bidirectional sync
+    public void setCustomer(Customer customer) {
+        // optional: remove from old customer if you support reassignment
+        // if (this.customer != null) this.customer.getBeerOrders().remove(this);
+
+        this.customer = customer;
+        if (customer != null) {
+            customer.getBeerOrders().add(this);
+        }
+    }
+
+    // ✅ Lombok hook: customize builder behavior
+    public BeerOrder build() {
+
+        BeerOrder order = new BeerOrder();
+
+        order.setBeerOrderId(this.beerOrderId);
+        order.setCustomerRef(this.customerRef);
+
+        // preserve default if not set
+        order.setBeerOrderLines(
+                this.beerOrderLines != null
+                        ? this.beerOrderLines
+                        : new HashSet<>()
+        );
+
+        order.setCreatedDate(this.createdDate);
+        order.setLastModifiedDate(this.lastModifiedDate);
+        order.setVersion(this.version);
+
+        if (this.customer != null) {
+            order.setCustomer(this.customer);
+        }
+
+        return order;
+    }
+
 }
 
