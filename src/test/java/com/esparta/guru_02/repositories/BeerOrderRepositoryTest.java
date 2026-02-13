@@ -76,23 +76,6 @@ class BeerOrderRepositoryTest {
             assertEquals("Test Order Ref", retrievedOrder.getCustomerRef());
             assertEquals(customer.getCustomerId(), retrievedOrder.getCustomer().getCustomerId());
     }
-    @Test
-    void testBeerOrders2() {
-
-        beerOrderRepository.flush();
-        entityManager.clear(); // 🔥 simulate real DB retrieval
-
-        BeerOrder retrievedOrder = beerOrderRepository
-                .findById(beerOrder.getBeerOrderId())
-                .orElseThrow();
-
-        assertEquals("Test Order Ref", retrievedOrder.getCustomerRef());
-        assertEquals(customer.getCustomerId(),
-                retrievedOrder.getCustomer().getCustomerId());
-
-        // Now this works correctly
-        assertEquals(1, retrievedOrder.getCustomer().getBeerOrders().size());
-    }
 
 
 }

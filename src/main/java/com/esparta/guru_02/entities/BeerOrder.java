@@ -75,18 +75,7 @@ public class BeerOrder {
 
         this.customer = customer;
         customer.getBeerOrders().add(this);
-        /*
-        if (this.customer != null) {
-            this.customer.getBeerOrders().remove(this);
-        }
 
-        this.customer = customer;
-
-        if (customer != null && !customer.getBeerOrders().contains(this)) {
-            customer.getBeerOrders().add(this);
-        }
-
-        */
     }
     // =========================================================
     // AUDITING
