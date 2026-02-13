@@ -40,21 +40,34 @@ public class Customer {
     @Column(name = "customer_id", columnDefinition = "CHAR(36)", updatable = false, nullable = false)
     private UUID customerId;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String customerName;
 
 
-    @Column(length = 255)
+    @Column()
     private String email;
 
     // =========================
     //     RELATIONSHIPS
     // ==========================
 
+
     @Builder.Default
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
     private Set<BeerOrder> beerOrders = new HashSet<>();
 
+    // =========================
+    //     CONVENIENCE METHODS
+    // =========================
+    public void addBeerOrder(BeerOrder order) {
+        beerOrders.add(order);
+        order.setCustomer(this);
+    }
+
+    public void removeBeerOrder(BeerOrder order) {
+        beerOrders.remove(order);
+        order.setCustomer(null);
+    }
     /* =========================
        AUDITING
        ========================= */

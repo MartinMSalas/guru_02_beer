@@ -29,9 +29,19 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Builder
 public class BeerOrder {
+
+    public BeerOrder(UUID beerOrderId, String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines, Instant createdDate, Instant lastModifiedDate, Long version) {
+
+        this.beerOrderId = beerOrderId;
+        this.customerRef = customerRef;
+        this.setCustomer(customer);
+        this.beerOrderLines = beerOrderLines;
+        this.createdDate = createdDate;
+        this.lastModifiedDate = lastModifiedDate;
+        this.version = version;
+    }
 
     // =========================================================
     // PRIMARY KEY (technical) - internal identifier
@@ -48,14 +58,36 @@ public class BeerOrder {
     // =========================================================
     // RELATIONSHIPS
     // =========================================================
-    @ManyToOne()
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @Builder.Default
-    @OneToMany(mappedBy = "beerOrder")
+    @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.PERSIST)
     private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
 
+
+    // =========================================
+    // Bidirectional sync logic
+    // =========================================
+
+    public void setCustomer(Customer customer) {
+
+        this.customer = customer;
+        customer.getBeerOrders().add(this);
+        /*
+        if (this.customer != null) {
+            this.customer.getBeerOrders().remove(this);
+        }
+
+        this.customer = customer;
+
+        if (customer != null && !customer.getBeerOrders().contains(this)) {
+            customer.getBeerOrders().add(this);
+        }
+
+        */
+    }
     // =========================================================
     // AUDITING
     // =========================================================
@@ -74,45 +106,8 @@ public class BeerOrder {
     @Column(name = "version")
     private Long version;
 
-    // =========================================================
-    // Helper Methods
-    // =========================================================
-    // ✅ bidirectional sync
-    public void setCustomer(Customer customer) {
-        // optional: remove from old customer if you support reassignment
-        // if (this.customer != null) this.customer.getBeerOrders().remove(this);
 
-        this.customer = customer;
-        if (customer != null) {
-            customer.getBeerOrders().add(this);
-        }
-    }
 
-    // ✅ Lombok hook: customize builder behavior
-    public BeerOrder build() {
-
-        BeerOrder order = new BeerOrder();
-
-        order.setBeerOrderId(this.beerOrderId);
-        order.setCustomerRef(this.customerRef);
-
-        // preserve default if not set
-        order.setBeerOrderLines(
-                this.beerOrderLines != null
-                        ? this.beerOrderLines
-                        : new HashSet<>()
-        );
-
-        order.setCreatedDate(this.createdDate);
-        order.setLastModifiedDate(this.lastModifiedDate);
-        order.setVersion(this.version);
-
-        if (this.customer != null) {
-            order.setCustomer(this.customer);
-        }
-
-        return order;
-    }
 
 }
 

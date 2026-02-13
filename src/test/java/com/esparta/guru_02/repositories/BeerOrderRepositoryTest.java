@@ -4,6 +4,7 @@ import com.esparta.guru_02.entities.Beer;
 import com.esparta.guru_02.entities.BeerOrder;
 import com.esparta.guru_02.entities.Customer;
 import com.esparta.guru_02.model.BeerStyle;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,9 @@ class BeerOrderRepositoryTest {
 
     @Autowired
     CustomerRepository customerRepository;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private Customer customer;
     private Beer beer;
@@ -72,7 +76,23 @@ class BeerOrderRepositoryTest {
             assertEquals("Test Order Ref", retrievedOrder.getCustomerRef());
             assertEquals(customer.getCustomerId(), retrievedOrder.getCustomer().getCustomerId());
     }
+    @Test
+    void testBeerOrders2() {
 
+        beerOrderRepository.flush();
+        entityManager.clear(); // 🔥 simulate real DB retrieval
+
+        BeerOrder retrievedOrder = beerOrderRepository
+                .findById(beerOrder.getBeerOrderId())
+                .orElseThrow();
+
+        assertEquals("Test Order Ref", retrievedOrder.getCustomerRef());
+        assertEquals(customer.getCustomerId(),
+                retrievedOrder.getCustomer().getCustomerId());
+
+        // Now this works correctly
+        assertEquals(1, retrievedOrder.getCustomer().getBeerOrders().size());
+    }
 
 
 }
