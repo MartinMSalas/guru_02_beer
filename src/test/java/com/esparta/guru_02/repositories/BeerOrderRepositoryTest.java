@@ -2,13 +2,16 @@ package com.esparta.guru_02.repositories;
 
 import com.esparta.guru_02.entities.Beer;
 import com.esparta.guru_02.entities.BeerOrder;
+import com.esparta.guru_02.entities.BeerOrderShipment;
 import com.esparta.guru_02.entities.Customer;
 import com.esparta.guru_02.model.BeerStyle;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.math.BigDecimal;
@@ -29,11 +32,15 @@ class BeerOrderRepositoryTest {
     CustomerRepository customerRepository;
 
     @Autowired
+    BeerOrderShipmentRepository beerOrderShipmentRepository;
+
+    @Autowired
     private EntityManager entityManager;
 
     private Customer customer;
     private Beer beer;
     private BeerOrder beerOrder;
+    private BeerOrderShipment beerOrderShipment;
 
     @BeforeEach
     void setUp() {
@@ -54,19 +61,31 @@ class BeerOrderRepositoryTest {
 
         beer = beerRepository.save(beer);
 
+
         // Create and save a BeerOrder
         beerOrder = BeerOrder.builder()
                 .customer(customer)
                 .customerRef("Test Order Ref")
                 .build();
+        /*
         beerOrder = beerOrderRepository.save(beerOrder);
+*/
+        beerOrderShipment = BeerOrderShipment.builder()
+                .shipmentTrackingNumber("AM1234567890")
+                .beerOrder(beerOrder)
+                .build();
+
+        beerOrderShipment = beerOrderShipmentRepository.save(beerOrderShipment);
+
+
     }
 
     @Test
     void testBeerOrders(){
-        System.out.println(beerOrderRepository.count());
-        System.out.println(beerRepository.count());
-        System.out.println(customerRepository.count());
+        System.out.println("Beer Orders: " + beerOrderRepository.count());
+        System.out.println("Beers: " + beerRepository.count());
+        System.out.println("Customers: " + customerRepository.count());
+        System.out.println("Beer Order Shipments: " + beerOrderShipmentRepository.count());
             assertEquals(1, beerOrderRepository.count());
             assertEquals(1, beerRepository.count());
             assertEquals(1, customerRepository.count());

@@ -4,42 +4,33 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UuidGenerator;
-import org.hibernate.type.SqlTypes;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 /*
  * Author: M
- * Date: 09-Feb-26
+ * Date: 13-Feb-26
  * Project Name: guru-02
  * Description: beExcellent
  */
-@Entity
-@Table(
-        name = "beer_order"
-
-)
-@EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
 @NoArgsConstructor
+@Entity
 @Builder
-public class BeerOrder {
+@EntityListeners(AuditingEntityListener.class)
+public class BeerOrderShipment {
 
-    public BeerOrder(UUID beerOrderId, String customerRef, Customer customer, Set<BeerOrderLine> beerOrderLines,
-                     BeerOrderShipment beerOrderShipment, Instant createdDate, Instant lastModifiedDate, Long version ) {
+    public BeerOrderShipment(UUID beerOrderShipmentId, String shipmentTrackingNumber, BeerOrder beerOrder,
+                             Instant createdDate, Instant lastModifiedDate, Long version) {
 
-        this.beerOrderId = beerOrderId;
-        this.customerRef = customerRef;
-        this.setCustomer(customer);
-        this.beerOrderLines = beerOrderLines;
-        this.beerOrderShipment = beerOrderShipment;
+        this.beerOrderShipmentId = beerOrderShipmentId;
+        this.shipmentTrackingNumber = shipmentTrackingNumber;
+        setBeerOrder(beerOrder);
         this.createdDate = createdDate;
         this.lastModifiedDate = lastModifiedDate;
         this.version = version;
@@ -50,37 +41,31 @@ public class BeerOrder {
     // =========================================================
     @Id
     @UuidGenerator
-    @JdbcTypeCode(SqlTypes.CHAR)
-    @Column(name = "beer_order_id", columnDefinition = "CHAR(36)", nullable = false, updatable = false)
-    private UUID beerOrderId;
+    @JdbcTypeCode(org.hibernate.type.SqlTypes.CHAR)
+    @Column(name = "beer_order_shipment_id", columnDefinition = "CHAR(36)", nullable = false, updatable = false)
+    private UUID beerOrderShipmentId;
 
-    @Column(name = "customer_ref")
-    private String customerRef;
+    private String shipmentTrackingNumber;
 
     // =========================================================
     // RELATIONSHIPS
     // =========================================================
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id")
-    private Customer customer;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "beerOrder", cascade = CascadeType.PERSIST)
-    private Set<BeerOrderLine> beerOrderLines = new HashSet<>();
-
-    @OneToOne(mappedBy = "beerOrder", cascade = CascadeType.PERSIST)
-    private BeerOrderShipment beerOrderShipment;
+    @OneToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "beer_order_id", nullable = false, unique = true)
+    private BeerOrder beerOrder;
 
     // =========================================
     // Bidirectional sync logic
     // =========================================
 
-    public void setCustomer(Customer customer) {
+    public void setBeerOrder(BeerOrder beerOrder) {
 
-        this.customer = customer;
-        customer.getBeerOrders().add(this);
+        this.beerOrder = beerOrder;
+        beerOrder.setBeerOrderShipment(this);
+
 
     }
+
     // =========================================================
     // AUDITING
     // =========================================================
@@ -99,8 +84,4 @@ public class BeerOrder {
     @Column(name = "version")
     private Long version;
 
-
-
-
 }
-
