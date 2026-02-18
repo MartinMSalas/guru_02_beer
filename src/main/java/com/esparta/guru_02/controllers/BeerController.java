@@ -98,7 +98,7 @@ public class BeerController {
             @RequestParam(required = false) String beerStyle,
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size
-            // @RequestParam(required = false) Integer size
+
     ) {
 
         log.debug("In BeerController.getAllBeers() with filters - beerName: {}, beerStyle: {}, page: {}, size: {}", beerName, beerStyle, page, size);

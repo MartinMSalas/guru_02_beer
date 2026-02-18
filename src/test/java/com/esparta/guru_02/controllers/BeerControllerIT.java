@@ -1,6 +1,7 @@
 package com.esparta.guru_02.controllers;
 
 
+import com.esparta.guru_02.configuration.SpringSecurityConfig;
 import com.esparta.guru_02.model.BeerDTO;
 import com.esparta.guru_02.model.BeerStyle;
 
@@ -8,12 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
 
 import org.junit.jupiter.api.Test;
@@ -32,6 +35,7 @@ import java.util.UUID;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,7 +50,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("localmysql")
+@Import(SpringSecurityConfig.class)
 public class BeerControllerIT {
+
+    private static final String USERNAME = "user";
+    private static final String PASSWORD = "password";
 
     @Container
     @ServiceConnection
@@ -74,9 +82,10 @@ public class BeerControllerIT {
                 .build();
     }
 
-
+/*
     private BeerDTO getFirstBeerFromList() throws Exception {
-        MvcResult result = mockMvc.perform(get(BEER_PATH))
+        MvcResult result = mockMvc.perform(get(BEER_PATH)
+                .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -89,7 +98,29 @@ public class BeerControllerIT {
         assertThat(firstBeer.getBeerId()).isNotNull();
         return firstBeer;
     }
+*/
+    private BeerDTO getFirstBeerFromList() throws Exception {
 
+        MvcResult result = mockMvc.perform(get(BEER_PATH)
+                        .with(httpBasic(USERNAME,PASSWORD)))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = result.getResponse().getContentAsString();
+
+        JsonNode root = objectMapper.readTree(json);
+        JsonNode content = root.get("content");
+
+        assertThat(content).isNotNull();
+        assertThat(content.isArray()).isTrue();
+        assertThat(content.size()).isGreaterThan(0);
+
+        BeerDTO firstBeer = objectMapper.treeToValue(content.get(0), BeerDTO.class);
+
+        assertThat(firstBeer.getBeerId()).isNotNull();
+
+        return firstBeer;
+    }
     /* =========================================================
        POST
        ========================================================= */
@@ -99,7 +130,8 @@ public class BeerControllerIT {
 
         mockMvc.perform(post(BEER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(buildValidBeerDTO())))
+                        .content(objectMapper.writeValueAsString(buildValidBeerDTO()))
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isCreated())
                 .andExpect(header().exists("Location"))
                 .andExpect(jsonPath("$.beerId").isNotEmpty())
@@ -113,7 +145,8 @@ public class BeerControllerIT {
 
         mockMvc.perform(post(BEER_PATH)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(invalid)))
+                        .content(objectMapper.writeValueAsString(invalid))
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -128,7 +161,8 @@ public class BeerControllerIT {
 
         BeerDTO created = getFirstBeerFromList();
 
-        mockMvc.perform(get(BEER_PATH + "/" + created.getBeerId()))
+        mockMvc.perform(get(BEER_PATH + "/" + created.getBeerId())
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.beerId").value(created.getBeerId().toString()))
                 .andExpect(jsonPath("$.beerName").value(created.getBeerName()));
@@ -137,7 +171,8 @@ public class BeerControllerIT {
     @Test
     void givenNonExistingBeerId_whenGetBeerById_then404NotFound() throws Exception {
 
-        mockMvc.perform(get(BEER_PATH + "/" + UUID.randomUUID()))
+        mockMvc.perform(get(BEER_PATH + "/" + UUID.randomUUID())
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isNotFound());
     }
 
@@ -148,19 +183,19 @@ public class BeerControllerIT {
     @Test
     void givenBeersExist_whenGetAllBeers_then200AndXTotalCount() throws Exception {
 
-
-
-        mockMvc.perform(get(BEER_PATH))
+        mockMvc.perform(get(BEER_PATH)
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("X-Total-Count"))
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()", greaterThanOrEqualTo(1)));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()", greaterThanOrEqualTo(1)));
     }
     void givenInvalidPaginationParams_whenGetAllBeers_then400() throws Exception {
 
         mockMvc.perform(get(BEER_PATH)
                         .param("page", "-1")
-                        .param("size", "0"))
+                        .param("size", "0")
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isBadRequest());
     }
 
@@ -176,7 +211,8 @@ public class BeerControllerIT {
 
         mockMvc.perform(put(BEER_PATH + "/" + created.getBeerId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(created)))
+                        .content(objectMapper.writeValueAsString(created))
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.beerName").value("Updated Beer"));
     }
@@ -196,7 +232,8 @@ public class BeerControllerIT {
 
         mockMvc.perform(patch(BEER_PATH + "/" + created.getBeerId())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(patch)))
+                        .content(objectMapper.writeValueAsString(patch))
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.beerName").value("Patched Beer"))
                 .andExpect(jsonPath("$.beerStyle").value(created.getBeerStyle().name()));
@@ -211,10 +248,12 @@ public class BeerControllerIT {
 
         BeerDTO created = getFirstBeerFromList();
 
-        mockMvc.perform(delete(BEER_PATH + "/" + created.getBeerId()))
+        mockMvc.perform(delete(BEER_PATH + "/" + created.getBeerId())
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isOk());
 
-        mockMvc.perform(get(BEER_PATH + "/" + created.getBeerId()))
+        mockMvc.perform(get(BEER_PATH + "/" + created.getBeerId())
+                        .with(httpBasic(USERNAME,PASSWORD)))
                 .andExpect(status().isNotFound());
     }
 }
