@@ -4,6 +4,7 @@ import com.esparta.guru_02.exceptions.BadRequestException;
 import com.esparta.guru_02.model.BeerDTO;
 
 import com.esparta.guru_02.services.BeerService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,13 +50,14 @@ public class BeerController {
     @PostMapping()
     public ResponseEntity<BeerDTO> createNewBeer(@Validated @RequestBody BeerDTO beerDTO){
         log.debug("In BeerController.createNewBeer() with beerDTO: {}", beerDTO);
+
         BeerDTO beerDTOSaved =  beerService.saveNewBeer(beerDTO);
         log.debug("Saved BeerDTO: {}", beerDTOSaved);
 
 
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location","/api/v1/beer/" + beerDTOSaved.getBeerId().toString());
-        return new ResponseEntity<>(beerService.saveNewBeer(beerDTO), headers, HttpStatus.CREATED);
+        return new ResponseEntity<>(beerDTOSaved, headers, HttpStatus.CREATED);
     }
 
     /**
