@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.List;
 import java.util.UUID;
@@ -41,6 +43,9 @@ class CustomerControllerComponentTest {
      */
     @Autowired
     CustomerRepository customerRepository;
+
+    @MockitoBean
+    JwtDecoder jwtDecoder;
 
     /* ==========================================================
        Helper

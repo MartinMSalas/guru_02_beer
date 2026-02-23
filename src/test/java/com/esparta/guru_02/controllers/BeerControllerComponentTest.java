@@ -13,7 +13,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -39,6 +41,8 @@ class BeerControllerComponentTest {
     @Autowired
     BeerRepository beerRepository;
 
+    @MockitoBean
+    JwtDecoder jwtDecoder;
     /* ==========================================================
        Helper
        ========================================================== */
